@@ -1,0 +1,1532 @@
+[
+  {
+    "name": "Fax services",
+    "code": "4814",
+    "description": "Fax services",
+    "categoryId": 1
+  },
+  {
+    "name": "Telecommunication service",
+    "code": "4814",
+    "description": "Telecommunication service including local and long distance calls, credit card calls, calls through use of magneticstrip reading telephones and fax services",
+    "categoryId": 1
+  },
+  {
+    "name": "VisaPhone",
+    "code": "4815",
+    "description": "VisaPhone",
+    "categoryId": 1
+  },
+  {
+    "name": "Telegraph services",
+    "code": "4821",
+    "description": "Telegraph services",
+    "categoryId": 1
+  },
+  {
+    "name": "Money Orders - Wire Transfer",
+    "code": "4829",
+    "description": "Money Orders - Wire Transfer",
+    "categoryId": 1
+  },
+  {
+    "name": "Cable and other pay television",
+    "code": "4899",
+    "description": "Cable and other pay television (previously Cable Services)",
+    "categoryId": 1
+  },
+  {
+    "name": "Electric, Gas, Sanitary and Water Utilities",
+    "code": "4900",
+    "description": "Electric, Gas, Sanitary and Water Utilities",
+    "categoryId": 2
+  },
+  {
+    "name": "Motor vehicle supplies and new parts",
+    "code": "5013",
+    "description": "Motor vehicle supplies and new parts",
+    "categoryId": 3
+  },
+  {
+    "name": "Office and Commercial Furniture",
+    "code": "5021",
+    "description": "Office and Commercial Furniture",
+    "categoryId": 4
+  },
+  {
+    "name": "Construction Materials, Not Elsewhere Classified",
+    "code": "5039",
+    "description": "Construction Materials, Not Elsewhere Classified",
+    "categoryId": 5
+  },
+  {
+    "name": "Office, Photographic, Photocopy, and Microfilm Equipment",
+    "code": "5044",
+    "description": "Office, Photographic, Photocopy, and Microfilm Equipment",
+    "categoryId": 4
+  },
+  {
+    "name": "Computers, Computer Peripheral Equipment, Software",
+    "code": "5045",
+    "description": "Computers, Computer Peripheral Equipment, Software",
+    "categoryId": 4
+  },
+  {
+    "name": "Commercial Equipment, Not Elsewhere Classified",
+    "code": "5046",
+    "description": "Commercial Equipment, Not Elsewhere Classified",
+    "categoryId": 4
+  },
+  {
+    "name": "Medical, Dental Ophthalmic, Hospital Equipment and Supplies",
+    "code": "5047",
+    "description": "Medical, Dental Ophthalmic, Hospital Equipment and Supplies",
+    "categoryId": 4
+  },
+  {
+    "name": "Metal Service Centers and Offices",
+    "code": "5051",
+    "description": "Metal Service Centers and Offices",
+    "categoryId": 4
+  },
+  {
+    "name": "Electrical Parts and Equipment",
+    "code": "5065",
+    "description": "Electrical Parts and Equipment",
+    "categoryId": 4
+  },
+  {
+    "name": "Hardware Equipment and Supplies",
+    "code": "5072",
+    "description": "Hardware Equipment and Supplies",
+    "categoryId": 4
+  },
+  {
+    "name": "Plumbing and Heating Equipment and Supplies",
+    "code": "5074",
+    "description": "Plumbing and Heating Equipment and Supplies",
+    "categoryId": 4
+  },
+  {
+    "name": "Industrial Supplies, Not Elsewhere Classified",
+    "code": "5085",
+    "description": "Industrial Supplies, Not Elsewhere Classified",
+    "categoryId": 4
+  },
+  {
+    "name": "Precious Stones and Metals, Watches and Jewelry",
+    "code": "5094",
+    "description": "Precious Stones and Metals, Watches and Jewelry",
+    "categoryId": 4
+  },
+  {
+    "name": "Durable Goods, Not Elsewhere Classified",
+    "code": "5099",
+    "description": "Durable Goods, Not Elsewhere Classified",
+    "categoryId": 4
+  },
+  {
+    "name": "Stationery, Office Supplies, Printing, and Writing Paper",
+    "code": "5111",
+    "description": "Stationery, Office Supplies, Printing, and Writing Paper",
+    "categoryId": 4
+  },
+  {
+    "name": "Drugs, Drug Proprietors, and Druggist's Sundries",
+    "code": "5122",
+    "description": "Drugs, Drug Proprietors, and Druggist's Sundries",
+    "categoryId": 12
+  },
+  {
+    "name": "Piece Goods, Notions, and Other Dry Goods",
+    "code": "5131",
+    "description": "Piece Goods, Notions, and Other Dry Goods",
+    "categoryId": 9
+  },
+  {
+    "name": "Men's Women's and Children's Uniforms and Commercial Clothing",
+    "code": "5137",
+    "description": "Men's Women's and Children's Uniforms and Commercial Clothing",
+    "categoryId": 9
+  },
+  {
+    "name": "Commercial Footwear",
+    "code": "5139",
+    "description": "Commercial Footwear",
+    "categoryId": 9
+  },
+  {
+    "name": "Chemicals and Allied Products, Not Elsewhere Classified",
+    "code": "5169",
+    "description": "Chemicals and Allied Products, Not Elsewhere Classified",
+    "categoryId": 4
+  },
+  {
+    "name": "Petroleum and Petroleum Products",
+    "code": "5172",
+    "description": "Petroleum and Petroleum Products",
+    "categoryId": 4
+  },
+  {
+    "name": "Books, Periodicals, and Newspapers",
+    "code": "5192",
+    "description": "Books, Periodicals, and Newspapers",
+    "categoryId": 12
+  },
+  {
+    "name": "Florists' Supplies, Nursery Stock and Flowers",
+    "code": "5193",
+    "description": "Florists' Supplies, Nursery Stock and Flowers",
+    "categoryId": 12
+  },
+  {
+    "name": "Paints, Varnishes, and Supplies",
+    "code": "5198",
+    "description": "Paints, Varnishes, and Supplies",
+    "categoryId": 5
+  },
+  {
+    "name": "Non-durable Goods, Not Elsewhere Classified",
+    "code": "5199",
+    "description": "Non-durable Goods, Not Elsewhere Classified",
+    "categoryId": 12
+  },
+  {
+    "name": "Home Supply Warehouse Stores",
+    "code": "5200",
+    "description": "Home Supply Warehouse Stores",
+    "categoryId": 5
+  },
+  {
+    "name": "Lumber and Building Materials Stores",
+    "code": "5211",
+    "description": "Lumber and Building Materials Stores",
+    "categoryId": 5
+  },
+  {
+    "name": "Glass Stores",
+    "code": "5231",
+    "description": "Glass Stores",
+    "categoryId": 5
+  },
+  {
+    "name": "Paint and Wallpaper Stores",
+    "code": "5231",
+    "description": "Paint and Wallpaper Stores",
+    "categoryId": 5
+  },
+  {
+    "name": "Wallpaper Stores",
+    "code": "5231",
+    "description": "Wallpaper Stores",
+    "categoryId": 5
+  },
+  {
+    "name": "Hardware Stores",
+    "code": "5251",
+    "description": "Hardware Stores",
+    "categoryId": 5
+  },
+  {
+    "name": "Nurseries – Lawn and Garden Supply Store",
+    "code": "5261",
+    "description": "Nurseries – Lawn and Garden Supply Store",
+    "categoryId": 5
+  },
+  {
+    "name": "Mobile Home Dealers",
+    "code": "5271",
+    "description": "Mobile Home Dealers",
+    "categoryId": 5
+  },
+  {
+    "name": "Wholesale Clubs",
+    "code": "5300",
+    "description": "Wholesale Clubs",
+    "categoryId": 6
+  },
+  {
+    "name": "Duty Free Store",
+    "code": "5309",
+    "description": "Duty Free Store",
+    "categoryId": 6
+  },
+  {
+    "name": "Discount Stores",
+    "code": "5310",
+    "description": "Discount Stores",
+    "categoryId": 6
+  },
+  {
+    "name": "Department Stores",
+    "code": "5311",
+    "description": "Department Stores",
+    "categoryId": 6
+  },
+  {
+    "name": "Variety Stores",
+    "code": "5331",
+    "description": "Variety Stores",
+    "categoryId": 6
+  },
+  {
+    "name": "Misc. General Merchandise",
+    "code": "5399",
+    "description": "Misc. General Merchandise",
+    "categoryId": 6
+  },
+  {
+    "name": "Grocery Stores",
+    "code": "5411",
+    "description": "Grocery Stores",
+    "categoryId": 7
+  },
+  {
+    "name": "Supermarkets",
+    "code": "5411",
+    "description": "Supermarkets",
+    "categoryId": 7
+  },
+  {
+    "name": "Freezer and Locker Meat Provisioners",
+    "code": "5422",
+    "description": "Freezer and Locker Meat Provisioners",
+    "categoryId": 7
+  },
+  {
+    "name": "Meat Provisioners – Freezer and Locker",
+    "code": "5422",
+    "description": "Meat Provisioners – Freezer and Locker",
+    "categoryId": 7
+  },
+  {
+    "name": "Candy Stores",
+    "code": "5441",
+    "description": "Candy Stores",
+    "categoryId": 7
+  },
+  {
+    "name": "Confectionery Stores",
+    "code": "5441",
+    "description": "Confectionery Stores",
+    "categoryId": 7
+  },
+  {
+    "name": "Nut Stores",
+    "code": "5441",
+    "description": "Nut Stores",
+    "categoryId": 7
+  },
+  {
+    "name": "Dairy Products Stores",
+    "code": "5451",
+    "description": "Dairy Products Stores",
+    "categoryId": 7
+  },
+  {
+    "name": "Bakeries",
+    "code": "5462",
+    "description": "Bakeries",
+    "categoryId": 7
+  },
+  {
+    "name": "Misc. Food Stores - Convenience Stores and Specialty Markets",
+    "code": "5499",
+    "description": "Misc. Food Stores - Convenience Stores and Specialty Markets",
+    "categoryId": 7
+  },
+  {
+    "name": "Car and Truck Dealers (New and Used) Sales, Service, Repairs, Parts, and Leasing",
+    "code": "5511",
+    "description": "Car and Truck Dealers (New and Used) Sales, Service, Repairs, Parts, and Leasing",
+    "categoryId": 8
+  },
+  {
+    "name": "Automobile and Truck Dealers (Used Only)",
+    "code": "5521",
+    "description": "Automobile and Truck Dealers (Used Only)",
+    "categoryId": 8
+  },
+  {
+    "name": "Automobile Supply Stores",
+    "code": "5531",
+    "description": "Automobile Supply Stores",
+    "categoryId": 8
+  },
+  {
+    "name": "Automotive Tire Stores",
+    "code": "5532",
+    "description": "Automotive Tire Stores",
+    "categoryId": 8
+  },
+  {
+    "name": "Automotive Parts, Accessories Stores",
+    "code": "5533",
+    "description": "Automotive Parts, Accessories Stores",
+    "categoryId": 8
+  },
+  {
+    "name": "Service Stations ( with or without ancillary services)",
+    "code": "5541",
+    "description": "Service Stations ( with or without ancillary services)",
+    "categoryId": 8
+  },
+  {
+    "name": "Automated Fuel Dispensers",
+    "code": "5542",
+    "description": "Automated Fuel Dispensers",
+    "categoryId": 8
+  },
+  {
+    "name": "Boat Dealers",
+    "code": "5551",
+    "description": "Boat Dealers",
+    "categoryId": 8
+  },
+  {
+    "name": "Recreational and Utility Trailers, Camp Dealers",
+    "code": "5561",
+    "description": "Recreational and Utility Trailers, Camp Dealers",
+    "categoryId": 8
+  },
+  {
+    "name": "Motorcycle Dealers",
+    "code": "5571",
+    "description": "Motorcycle Dealers",
+    "categoryId": 8
+  },
+  {
+    "name": "Motor Home Dealers",
+    "code": "5592",
+    "description": "Motor Home Dealers",
+    "categoryId": 8
+  },
+  {
+    "name": "Snowmobile Dealers",
+    "code": "5598",
+    "description": "Snowmobile Dealers",
+    "categoryId": 8
+  },
+  {
+    "name": "Men's and Boy's Clothing and Accessories Stores",
+    "code": "5611",
+    "description": "Men's and Boy's Clothing and Accessories Stores",
+    "categoryId": 9
+  },
+  {
+    "name": "Women's Ready - to - Wear Stores",
+    "code": "5621",
+    "description": "Women's Ready - to - Wear Stores",
+    "categoryId": 9
+  },
+  {
+    "name": "Women's Accessory and Specialty Shops",
+    "code": "5631",
+    "description": "Women's Accessory and Specialty Shops",
+    "categoryId": 9
+  },
+  {
+    "name": "Children's and Infant's Wear Stores",
+    "code": "5641",
+    "description": "Children's and Infant's Wear Stores",
+    "categoryId": 9
+  },
+  {
+    "name": "Family Clothing Stores",
+    "code": "5651",
+    "description": "Family Clothing Stores",
+    "categoryId": 9
+  },
+  {
+    "name": "Sports Apparel, Riding Apparel Stores",
+    "code": "5655",
+    "description": "Sports Apparel, Riding Apparel Stores",
+    "categoryId": 9
+  },
+  {
+    "name": "Shoe Stores",
+    "code": "5661",
+    "description": "Shoe Stores",
+    "categoryId": 9
+  },
+  {
+    "name": "Furriers and Fur Shops",
+    "code": "5681",
+    "description": "Furriers and Fur Shops",
+    "categoryId": 9
+  },
+  {
+    "name": "Men's and Women's Clothing Stores",
+    "code": "5691",
+    "description": "Men's and Women's Clothing Stores",
+    "categoryId": 9
+  },
+  {
+    "name": "Tailors, Seamstress, Mending, and Alterations",
+    "code": "5697",
+    "description": "Tailors, Seamstress, Mending, and Alterations",
+    "categoryId": 9
+  },
+  {
+    "name": "Wig and Toupee Stores",
+    "code": "5698",
+    "description": "Wig and Toupee Stores",
+    "categoryId": 9
+  },
+  {
+    "name": "Miscellaneous Apparel and Accessory Shops",
+    "code": "5699",
+    "description": "Miscellaneous Apparel and Accessory Shops",
+    "categoryId": 9
+  },
+  {
+    "name": "Furniture, Home Furnishings, and Equipment Stores, Except Appliances",
+    "code": "5712",
+    "description": "Furniture, Home Furnishings, and Equipment Stores, Except Appliances",
+    "categoryId": 10
+  },
+  {
+    "name": "Floor Covering Stores",
+    "code": "5713",
+    "description": "Floor Covering Stores",
+    "categoryId": 10
+  },
+  {
+    "name": "Drapery, Window Covering and Upholstery Stores",
+    "code": "5714",
+    "description": "Drapery, Window Covering and Upholstery Stores",
+    "categoryId": 10
+  },
+  {
+    "name": "Fireplace, Fireplace Screens, and Accessories Stores",
+    "code": "5718",
+    "description": "Fireplace, Fireplace Screens, and Accessories Stores",
+    "categoryId": 10
+  },
+  {
+    "name": "Miscellaneous Home Furnishing Specialty Stores",
+    "code": "5719",
+    "description": "Miscellaneous Home Furnishing Specialty Stores",
+    "categoryId": 10
+  },
+  {
+    "name": "Household Appliance Stores",
+    "code": "5722",
+    "description": "Household Appliance Stores",
+    "categoryId": 10
+  },
+  {
+    "name": "Electronic Sales",
+    "code": "5732",
+    "description": "Electronic Sales",
+    "categoryId": 10
+  },
+  {
+    "name": "Music Stores, Musical Instruments, Piano Sheet Music",
+    "code": "5733",
+    "description": "Music Stores, Musical Instruments, Piano Sheet Music",
+    "categoryId": 10
+  },
+  {
+    "name": "Computer Software Stores",
+    "code": "5734",
+    "description": "Computer Software Stores",
+    "categoryId": 10
+  },
+  {
+    "name": "Record Shops",
+    "code": "5735",
+    "description": "Record Shops",
+    "categoryId": 10
+  },
+  {
+    "name": "Caterers",
+    "code": "5811",
+    "description": "Caterers",
+    "categoryId": 11
+  },
+  {
+    "name": "Eating places and Restaurants",
+    "code": "5812",
+    "description": "Eating places and Restaurants",
+    "categoryId": 11
+  },
+  {
+    "name": "Drinking Places (Alcoholic Beverages), Bars, Taverns, Cocktail lounges, Nightclubs and Discotheques",
+    "code": "5813",
+    "description": "Drinking Places (Alcoholic Beverages), Bars, Taverns, Cocktail lounges, Nightclubs and Discotheques",
+    "categoryId": 11
+  },
+  {
+    "name": "Fast Food Restaurants",
+    "code": "5814",
+    "description": "Fast Food Restaurants",
+    "categoryId": 11
+  },
+  {
+    "name": "Drug Stores and Pharmacies",
+    "code": "5912",
+    "description": "Drug Stores and Pharmacies",
+    "categoryId": 12
+  },
+  {
+    "name": "Package Stores - Beer, Wine, and Liquor",
+    "code": "5921",
+    "description": "Package Stores - Beer, Wine, and Liquor",
+    "categoryId": 12
+  },
+  {
+    "name": "Used Merchandise and Secondhand Stores",
+    "code": "5931",
+    "description": "Used Merchandise and Secondhand Stores",
+    "categoryId": 12
+  },
+  {
+    "name": "Antique Shops - Sales, Repairs, and Restoration Services",
+    "code": "5832",
+    "description": "Antique Shops - Sales, Repairs, and Restoration Services",
+    "categoryId": 12
+  },
+  {
+    "name": "Pawn Shops and Salvage Yards",
+    "code": "5933",
+    "description": "Pawn Shops and Salvage Yards",
+    "categoryId": 12
+  },
+  {
+    "name": "Wrecking and Salvage Yards",
+    "code": "5935",
+    "description": "Wrecking and Salvage Yards",
+    "categoryId": 12
+  },
+  {
+    "name": "Antique Reproductions",
+    "code": "5937",
+    "description": "Antique Reproductions",
+    "categoryId": 12
+  },
+  {
+    "name": "Bicycle Shops - Sales and Service",
+    "code": "5940",
+    "description": "Bicycle Shops - Sales and Service",
+    "categoryId": 12
+  },
+  {
+    "name": "Sporting Goods Stores",
+    "code": "5941",
+    "description": "Sporting Goods Stores",
+    "categoryId": 12
+  },
+  {
+    "name": "Book Stores",
+    "code": "5942",
+    "description": "Book Stores",
+    "categoryId": 12
+  },
+  {
+    "name": "Stationery Stores, Office and School Supply Stores",
+    "code": "5943",
+    "description": "Stationery Stores, Office and School Supply Stores",
+    "categoryId": 12
+  },
+  {
+    "name": "Watch, Clock, Jewelry, and Silverware Stores",
+    "code": "5944",
+    "description": "Watch, Clock, Jewelry, and Silverware Stores",
+    "categoryId": 12
+  },
+  {
+    "name": "Hobby, Toy, and Game Shops",
+    "code": "5945",
+    "description": "Hobby, Toy, and Game Shops",
+    "categoryId": 12
+  },
+  {
+    "name": "Camera and Photographic Supply Stores",
+    "code": "5946",
+    "description": "Camera and Photographic Supply Stores",
+    "categoryId": 12
+  },
+  {
+    "name": "Card Shops, Gift, Novelty, and Souvenir Shops",
+    "code": "5947",
+    "description": "Card Shops, Gift, Novelty, and Souvenir Shops",
+    "categoryId": 12
+  },
+  {
+    "name": "Leather Foods Stores",
+    "code": "5948",
+    "description": "Leather Foods Stores",
+    "categoryId": 12
+  },
+  {
+    "name": "Sewing, Needle, Fabric, and Price Goods Stores",
+    "code": "5949",
+    "description": "Sewing, Needle, Fabric, and Price Goods Stores",
+    "categoryId": 12
+  },
+  {
+    "name": "Glassware/Crystal Stores",
+    "code": "5950",
+    "description": "Glassware/Crystal Stores",
+    "categoryId": 12
+  },
+  {
+    "name": "Direct Marketing - Insurance Service",
+    "code": "5960",
+    "description": "Direct Marketing - Insurance Service",
+    "categoryId": 12
+  },
+  {
+    "name": "Mail Order Houses Including Catalog Order Stores, Book/Record Clubs (No longer permitted for .S. original presentments)",
+    "code": "5961",
+    "description": "Mail Order Houses Including Catalog Order Stores, Book/Record Clubs (No longer permitted for .S. original presentments)",
+    "categoryId": 12
+  },
+  {
+    "name": "Direct Marketing - Travel Related Arrangements Services",
+    "code": "5962",
+    "description": "Direct Marketing - Travel Related Arrangements Services",
+    "categoryId": 12
+  },
+  {
+    "name": "Door - to - Door Sales",
+    "code": "5963",
+    "description": "Door - to - Door Sales",
+    "categoryId": 12
+  },
+  {
+    "name": "Direct Marketing - Catalog Merchant",
+    "code": "5964",
+    "description": "Direct Marketing - Catalog Merchant",
+    "categoryId": 12
+  },
+  {
+    "name": "Direct Marketing - Catalog and Catalog and Retail Merchant Direct Marketing - Outbound Telemarketing Merchant",
+    "code": "5965",
+    "description": "Direct Marketing - Catalog and Catalog and Retail Merchant Direct Marketing - Outbound Telemarketing Merchant",
+    "categoryId": 12
+  },
+  {
+    "name": "Direct Marketing -Inbound Teleservices Merchant",
+    "code": "5967",
+    "description": "Direct Marketing -Inbound Teleservices Merchant",
+    "categoryId": 12
+  },
+  {
+    "name": "Direct Marketing - Continuity/Subscription Merchant",
+    "code": "5968",
+    "description": "Direct Marketing - Continuity/Subscription Merchant",
+    "categoryId": 12
+  },
+  {
+    "name": "Direct Marketing - Not Elsewhere Classified",
+    "code": "5969",
+    "description": "Direct Marketing - Not Elsewhere Classified",
+    "categoryId": 12
+  },
+  {
+    "name": "Artist's Supply and Craft Shops",
+    "code": "5970",
+    "description": "Artist's Supply and Craft Shops",
+    "categoryId": 12
+  },
+  {
+    "name": "Art Dealers and Galleries",
+    "code": "5971",
+    "description": "Art Dealers and Galleries",
+    "categoryId": 12
+  },
+  {
+    "name": "Stamp and Coin Stores - Philatelic and Numismatic Supplies",
+    "code": "5972",
+    "description": "Stamp and Coin Stores - Philatelic and Numismatic Supplies",
+    "categoryId": 12
+  },
+  {
+    "name": "Religious Goods Stores",
+    "code": "5973",
+    "description": "Religious Goods Stores",
+    "categoryId": 12
+  },
+  {
+    "name": "Hearing Aids - Sales, Service, and Supply Stores",
+    "code": "5975",
+    "description": "Hearing Aids - Sales, Service, and Supply Stores",
+    "categoryId": 12
+  },
+  {
+    "name": "Orthopedic Goods Prosthetic Devices",
+    "code": "5976",
+    "description": "Orthopedic Goods Prosthetic Devices",
+    "categoryId": 12
+  },
+  {
+    "name": "Cosmetic Stores",
+    "code": "5977",
+    "description": "Cosmetic Stores",
+    "categoryId": 12
+  },
+  {
+    "name": "Typewriter Stores - Sales, Rental, Service",
+    "code": "5978",
+    "description": "Typewriter Stores - Sales, Rental, Service",
+    "categoryId": 12
+  },
+  {
+    "name": "Fuel - Fuel Oil, Wood, Coal, Liquefied Petroleum",
+    "code": "5983",
+    "description": "Fuel - Fuel Oil, Wood, Coal, Liquefied Petroleum",
+    "categoryId": 12
+  },
+  {
+    "name": "Florists",
+    "code": "5992",
+    "description": "Florists",
+    "categoryId": 12
+  },
+  {
+    "name": "Cigar Stores and Stands",
+    "code": "5993",
+    "description": "Cigar Stores and Stands",
+    "categoryId": 12
+  },
+  {
+    "name": "News Dealers and Newsstands",
+    "code": "5994",
+    "description": "News Dealers and Newsstands",
+    "categoryId": 12
+  },
+  {
+    "name": "Pet Shops, Pet Foods, and Supplies Stores",
+    "code": "5995",
+    "description": "Pet Shops, Pet Foods, and Supplies Stores",
+    "categoryId": 12
+  },
+  {
+    "name": "Swimming Pools - Sales, Service, and Supplies",
+    "code": "5996",
+    "description": "Swimming Pools - Sales, Service, and Supplies",
+    "categoryId": 12
+  },
+  {
+    "name": "Electric Razor Stores - Sales and Service",
+    "code": "5997",
+    "description": "Electric Razor Stores - Sales and Service",
+    "categoryId": 12
+  },
+  {
+    "name": "Tent and Awning Shops",
+    "code": "5998",
+    "description": "Tent and Awning Shops",
+    "categoryId": 12
+  },
+  {
+    "name": "Miscellaneous and Specialty Retail Stores",
+    "code": "5999",
+    "description": "Miscellaneous and Specialty Retail Stores",
+    "categoryId": 12
+  },
+  {
+    "name": "Financial Institutions - Merchandise and Services",
+    "code": "6012",
+    "description": "Financial Institutions - Merchandise and Services",
+    "categoryId": 13
+  },
+  {
+    "name": "Non - Financial Institutions - Foreign Currency, Money Orders (not wire transfer) and Travelers Cheques",
+    "code": "6051",
+    "description": "Non - Financial Institutions - Foreign Currency, Money Orders (not wire transfer) and Travelers Cheques",
+    "categoryId": 13
+  },
+  {
+    "name": "Security Brokers/Dealers",
+    "code": "6211",
+    "description": "Security Brokers/Dealers",
+    "categoryId": 14
+  },
+  {
+    "name": "Insurance Sales, Underwriting, and Premiums",
+    "code": "6300",
+    "description": "Insurance Sales, Underwriting, and Premiums",
+    "categoryId": 15
+  },
+  {
+    "name": "Insurance Premiums, (no longer valid for first presentment work)",
+    "code": "6381",
+    "description": "Insurance Premiums, (no longer valid for first presentment work)",
+    "categoryId": 15
+  },
+  {
+    "name": "Insurance, Not Elsewhere Classified ( no longer valid for first presentment work)",
+    "code": "6399",
+    "description": "Insurance, Not Elsewhere Classified ( no longer valid for first presentment work)",
+    "categoryId": 15
+  },
+  {
+    "name": "Lodging - Hotels, Motels, Resorts, Central Reservation Services (not elsewhere classified)",
+    "code": "7011",
+    "description": "Lodging - Hotels, Motels, Resorts, Central Reservation Services (not elsewhere classified)",
+    "categoryId": 18
+  },
+  {
+    "name": "Timeshares",
+    "code": "7012",
+    "description": "Timeshares",
+    "categoryId": 18
+  },
+  {
+    "name": "Sporting and Recreational Camps",
+    "code": "7032",
+    "description": "Sporting and Recreational Camps",
+    "categoryId": 18
+  },
+  {
+    "name": "Trailer Parks and Camp Grounds",
+    "code": "7033",
+    "description": "Trailer Parks and Camp Grounds",
+    "categoryId": 18
+  },
+  {
+    "name": "Laundry, Cleaning, and Garment Services",
+    "code": "7210",
+    "description": "Laundry, Cleaning, and Garment Services",
+    "categoryId": 19
+  },
+  {
+    "name": "Laundry - Family and Commercial",
+    "code": "7211",
+    "description": "Laundry - Family and Commercial",
+    "categoryId": 19
+  },
+  {
+    "name": "Dry Cleaners",
+    "code": "7216",
+    "description": "Dry Cleaners",
+    "categoryId": 19
+  },
+  {
+    "name": "Carpet and Upholstery Cleaning",
+    "code": "7217",
+    "description": "Carpet and Upholstery Cleaning",
+    "categoryId": 19
+  },
+  {
+    "name": "Photographic Studios",
+    "code": "7221",
+    "description": "Photographic Studios",
+    "categoryId": 19
+  },
+  {
+    "name": "Barber and Beauty Shops",
+    "code": "7230",
+    "description": "Barber and Beauty Shops",
+    "categoryId": 19
+  },
+  {
+    "name": "Shop Repair Shops and Shoe Shine Parlors, and Hat Cleaning Shops",
+    "code": "7251",
+    "description": "Shop Repair Shops and Shoe Shine Parlors, and Hat Cleaning Shops",
+    "categoryId": 19
+  },
+  {
+    "name": "Funeral Service and Crematories",
+    "code": "7261",
+    "description": "Funeral Service and Crematories",
+    "categoryId": 19
+  },
+  {
+    "name": "Dating and Escort Services",
+    "code": "7273",
+    "description": "Dating and Escort Services",
+    "categoryId": 19
+  },
+  {
+    "name": "Tax Preparation Service",
+    "code": "7276",
+    "description": "Tax Preparation Service",
+    "categoryId": 19
+  },
+  {
+    "name": "Counseling Service - Debt, Marriage, Personal",
+    "code": "7277",
+    "description": "Counseling Service - Debt, Marriage, Personal",
+    "categoryId": 19
+  },
+  {
+    "name": "Buying/Shopping Services, Clubs",
+    "code": "7278",
+    "description": "Buying/Shopping Services, Clubs",
+    "categoryId": 19
+  },
+  {
+    "name": "Clothing Rental - Costumes, Formal Wear, Uniforms",
+    "code": "7296",
+    "description": "Clothing Rental - Costumes, Formal Wear, Uniforms",
+    "categoryId": 19
+  },
+  {
+    "name": "Massage Parlors",
+    "code": "7297",
+    "description": "Massage Parlors",
+    "categoryId": 19
+  },
+  {
+    "name": "Health and Beauty Shops",
+    "code": "7298",
+    "description": "Health and Beauty Shops",
+    "categoryId": 19
+  },
+  {
+    "name": "Miscellaneous Personal Services ( not elsewhere classifies)",
+    "code": "7299",
+    "description": "Miscellaneous Personal Services ( not elsewhere classifies)",
+    "categoryId": 19
+  },
+  {
+    "name": "Advertising Services",
+    "code": "7311",
+    "description": "Advertising Services",
+    "categoryId": 20
+  },
+  {
+    "name": "Consumer Credit Reporting Agencies",
+    "code": "7321",
+    "description": "Consumer Credit Reporting Agencies",
+    "categoryId": 20
+  },
+  {
+    "name": "Blueprinting and Photocopying Services",
+    "code": "7332",
+    "description": "Blueprinting and Photocopying Services",
+    "categoryId": 20
+  },
+  {
+    "name": "Commercial Photography, Art and Graphics",
+    "code": "7333",
+    "description": "Commercial Photography, Art and Graphics",
+    "categoryId": 20
+  },
+  {
+    "name": "Quick Copy, Reproduction and Blueprinting Services",
+    "code": "7338",
+    "description": "Quick Copy, Reproduction and Blueprinting Services",
+    "categoryId": 20
+  },
+  {
+    "name": "Stenographic and Secretarial Support Services",
+    "code": "7339",
+    "description": "Stenographic and Secretarial Support Services",
+    "categoryId": 20
+  },
+  {
+    "name": "Disinfecting Services",
+    "code": "7342",
+    "description": "Disinfecting Services",
+    "categoryId": 20
+  },
+  {
+    "name": "Exterminating and Disinfecting Services",
+    "code": "7342",
+    "description": "Exterminating and Disinfecting Services",
+    "categoryId": 20
+  },
+  {
+    "name": "Cleaning and Maintenance, Janitorial Services",
+    "code": "7349",
+    "description": "Cleaning and Maintenance, Janitorial Services",
+    "categoryId": 20
+  },
+  {
+    "name": "Employment Agencies, Temporary Help Services",
+    "code": "7361",
+    "description": "Employment Agencies, Temporary Help Services",
+    "categoryId": 20
+  },
+  {
+    "name": "Computer Programming, Integrated Systems Design and Data Processing Services",
+    "code": "7372",
+    "description": "Computer Programming, Integrated Systems Design and Data Processing Services",
+    "categoryId": 20
+  },
+  {
+    "name": "Information Retrieval Services",
+    "code": "7375",
+    "description": "Information Retrieval Services",
+    "categoryId": 20
+  },
+  {
+    "name": "Computer Maintenance and Repair Services, Not Elsewhere Classified",
+    "code": "7379",
+    "description": "Computer Maintenance and Repair Services, Not Elsewhere Classified",
+    "categoryId": 20
+  },
+  {
+    "name": "Management, Consulting, and Public Relations Services",
+    "code": "7392",
+    "description": "Management, Consulting, and Public Relations Services",
+    "categoryId": 20
+  },
+  {
+    "name": "Protective and Security Services - Including Armored Cars and Guard Dogs",
+    "code": "7393",
+    "description": "Protective and Security Services - Including Armored Cars and Guard Dogs",
+    "categoryId": 20
+  },
+  {
+    "name": "Equipment Rental and Leasing Services, Tool Rental, Furniture Rental, and Appliance Rental",
+    "code": "7394",
+    "description": "Equipment Rental and Leasing Services, Tool Rental, Furniture Rental, and Appliance Rental",
+    "categoryId": 20
+  },
+  {
+    "name": "Photofinishing Laboratories, Photo Developing",
+    "code": "7395",
+    "description": "Photofinishing Laboratories, Photo Developing",
+    "categoryId": 20
+  },
+  {
+    "name": "Business Services, Not Elsewhere Classified",
+    "code": "7399",
+    "description": "Business Services, Not Elsewhere Classified",
+    "categoryId": 20
+  },
+  {
+    "name": "Car Rental Companies ( Not Listed Below)",
+    "code": "7512",
+    "description": "Car Rental Companies ( Not Listed Below)",
+    "categoryId": 21
+  },
+  {
+    "name": "Truck and Utility Trailer Rentals",
+    "code": "7513",
+    "description": "Truck and Utility Trailer Rentals",
+    "categoryId": 21
+  },
+  {
+    "name": "Motor Home and Recreational Vehicle Rentals",
+    "code": "7519",
+    "description": "Motor Home and Recreational Vehicle Rentals",
+    "categoryId": 21
+  },
+  {
+    "name": "Automobile Parking Lots and Garages",
+    "code": "7523",
+    "description": "Automobile Parking Lots and Garages",
+    "categoryId": 21
+  },
+  {
+    "name": "Automotive Body Repair Shops",
+    "code": "7531",
+    "description": "Automotive Body Repair Shops",
+    "categoryId": 21
+  },
+  {
+    "name": "Tire Re - treading and Repair Shops",
+    "code": "7534",
+    "description": "Tire Re - treading and Repair Shops",
+    "categoryId": 21
+  },
+  {
+    "name": "Paint Shops - Automotive",
+    "code": "7535",
+    "description": "Paint Shops - Automotive",
+    "categoryId": 21
+  },
+  {
+    "name": "Automotive Service Shops",
+    "code": "7538",
+    "description": "Automotive Service Shops",
+    "categoryId": 21
+  },
+  {
+    "name": "Car Washes",
+    "code": "7542",
+    "description": "Car Washes",
+    "categoryId": 21
+  },
+  {
+    "name": "Towing Services",
+    "code": "7549",
+    "description": "Towing Services",
+    "categoryId": 21
+  },
+  {
+    "name": "Radio Repair Shops",
+    "code": "7622",
+    "description": "Radio Repair Shops",
+    "categoryId": 22
+  },
+  {
+    "name": "Air Conditioning and Refrigeration Repair Shops",
+    "code": "7623",
+    "description": "Air Conditioning and Refrigeration Repair Shops",
+    "categoryId": 22
+  },
+  {
+    "name": "Electrical And Small Appliance Repair Shops",
+    "code": "7629",
+    "description": "Electrical And Small Appliance Repair Shops",
+    "categoryId": 22
+  },
+  {
+    "name": "Watch, Clock, and Jewelry Repair",
+    "code": "7631",
+    "description": "Watch, Clock, and Jewelry Repair",
+    "categoryId": 22
+  },
+  {
+    "name": "Furniture, Furniture Repair, and Furniture Refinishing",
+    "code": "7641",
+    "description": "Furniture, Furniture Repair, and Furniture Refinishing",
+    "categoryId": 22
+  },
+  {
+    "name": "Welding Repair",
+    "code": "7692",
+    "description": "Welding Repair",
+    "categoryId": 22
+  },
+  {
+    "name": "Repair Shops and Related Services - Miscellaneous",
+    "code": "7699",
+    "description": "Repair Shops and Related Services - Miscellaneous",
+    "categoryId": 22
+  },
+  {
+    "name": "Motion Pictures and Video Tape Production and Distribution",
+    "code": "7829",
+    "description": "Motion Pictures and Video Tape Production and Distribution",
+    "categoryId": 23
+  },
+  {
+    "name": "Motion Picture Theaters",
+    "code": "7832",
+    "description": "Motion Picture Theaters",
+    "categoryId": 23
+  },
+  {
+    "name": "Video Tape Rental Stores",
+    "code": "7841",
+    "description": "Video Tape Rental Stores",
+    "categoryId": 23
+  },
+  {
+    "name": "Dance Halls, Studios and Schools",
+    "code": "7911",
+    "description": "Dance Halls, Studios and Schools",
+    "categoryId": 24
+  },
+  {
+    "name": "Theatrical Producers (Except Motion Pictures), Ticket Agencies",
+    "code": "7922",
+    "description": "Theatrical Producers (Except Motion Pictures), Ticket Agencies",
+    "categoryId": 24
+  },
+  {
+    "name": "Bands. Orchestras, and Miscellaneous Entertainers (Not Elsewhere Classified)",
+    "code": "7929",
+    "description": "Bands. Orchestras, and Miscellaneous Entertainers (Not Elsewhere Classified)",
+    "categoryId": 24
+  },
+  {
+    "name": "Billiard and Pool Establishments",
+    "code": "7932",
+    "description": "Billiard and Pool Establishments",
+    "categoryId": 24
+  },
+  {
+    "name": "Bowling Alleys",
+    "code": "7933",
+    "description": "Bowling Alleys",
+    "categoryId": 24
+  },
+  {
+    "name": "Commercial Sports, Athletic Fields, Professional Sport Clubs, and Sport Promoters",
+    "code": "7941",
+    "description": "Commercial Sports, Athletic Fields, Professional Sport Clubs, and Sport Promoters",
+    "categoryId": 24
+  },
+  {
+    "name": "Tourist Attractions and Exhibits",
+    "code": "7991",
+    "description": "Tourist Attractions and Exhibits",
+    "categoryId": 24
+  },
+  {
+    "name": "Golf Courses - Public",
+    "code": "7992",
+    "description": "Golf Courses - Public",
+    "categoryId": 24
+  },
+  {
+    "name": "Video Amusement Game Supplies",
+    "code": "7993",
+    "description": "Video Amusement Game Supplies",
+    "categoryId": 24
+  },
+  {
+    "name": "Video Game Arcades/Establishments",
+    "code": "7994",
+    "description": "Video Game Arcades/Establishments",
+    "categoryId": 24
+  },
+  {
+    "name": "Betting (including Lottery Tickets, Casino Gaming Chips, Off - track Betting and Wagers)",
+    "code": "7995",
+    "description": "Betting (including Lottery Tickets, Casino Gaming Chips, Off - track Betting and Wagers)",
+    "categoryId": 24
+  },
+  {
+    "name": "Amusement Parks, Carnivals, Circuses, Fortune Tellers",
+    "code": "7996",
+    "description": "Amusement Parks, Carnivals, Circuses, Fortune Tellers",
+    "categoryId": 24
+  },
+  {
+    "name": "Membership Clubs (Sports, Recreation, Athletic), Country Clubs, and Private Golf Courses",
+    "code": "7997",
+    "description": "Membership Clubs (Sports, Recreation, Athletic), Country Clubs, and Private Golf Courses",
+    "categoryId": 24
+  },
+  {
+    "name": "Aquariums, Sea - aquariums, Dolphinariums",
+    "code": "7998",
+    "description": "Aquariums, Sea - aquariums, Dolphinariums",
+    "categoryId": 24
+  },
+  {
+    "name": "Recreation Services (Not Elsewhere Classified)",
+    "code": "7999",
+    "description": "Recreation Services (Not Elsewhere Classified)",
+    "categoryId": 24
+  },
+  {
+    "name": "Doctors and Physicians (Not Elsewhere Classified)",
+    "code": "8011",
+    "description": "Doctors and Physicians (Not Elsewhere Classified)",
+    "categoryId": 25
+  },
+  {
+    "name": "Dentists and Orthodontists",
+    "code": "8021",
+    "description": "Dentists and Orthodontists",
+    "categoryId": 25
+  },
+  {
+    "name": "Osteopaths",
+    "code": "8031 ",
+    "description": "Osteopaths",
+    "categoryId": 25
+  },
+  {
+    "name": "Chiropractors",
+    "code": "8041",
+    "description": "Chiropractors",
+    "categoryId": 25
+  },
+  {
+    "name": "Optometrists and Ophthalmologists",
+    "code": "8042",
+    "description": "Optometrists and Ophthalmologists",
+    "categoryId": 25
+  },
+  {
+    "name": "Opticians, Opticians Goods and Eyeglasses",
+    "code": "8043",
+    "description": "Opticians, Opticians Goods and Eyeglasses",
+    "categoryId": 25
+  },
+  {
+    "name": "Opticians, Optical Goods, and Eyeglasses (no longer valid for first presentments)",
+    "code": "8044",
+    "description": "Opticians, Optical Goods, and Eyeglasses (no longer valid for first presentments)",
+    "categoryId": 25
+  },
+  {
+    "name": "Podiatrists and Chiropodists",
+    "code": "8049",
+    "description": "Podiatrists and Chiropodists",
+    "categoryId": 25
+  },
+  {
+    "name": "Nursing and Personal Care Facilities",
+    "code": "8050",
+    "description": "Nursing and Personal Care Facilities",
+    "categoryId": 25
+  },
+  {
+    "name": "Hospitals",
+    "code": "8062",
+    "description": "Hospitals",
+    "categoryId": 25
+  },
+  {
+    "name": "Medical and Dental Laboratories",
+    "code": "8071",
+    "description": "Medical and Dental Laboratories",
+    "categoryId": 25
+  },
+  {
+    "name": "Medical Services and Health Practitioners (Not Elsewhere Classified)",
+    "code": "8099",
+    "description": "Medical Services and Health Practitioners (Not Elsewhere Classified)",
+    "categoryId": 25
+  },
+  {
+    "name": "Colleges, Junior Colleges, Universities, and Professional Schools",
+    "code": "8220",
+    "description": "Colleges, Junior Colleges, Universities, and Professional Schools",
+    "categoryId": 27
+  },
+  {
+    "name": "Correspondence Schools",
+    "code": "8241",
+    "description": "Correspondence Schools",
+    "categoryId": 27
+  },
+  {
+    "name": "Business and Secretarial Schools",
+    "code": "8244",
+    "description": "Business and Secretarial Schools",
+    "categoryId": 27
+  },
+  {
+    "name": "Vocational Schools and Trade Schools",
+    "code": "8249",
+    "description": "Vocational Schools and Trade Schools",
+    "categoryId": 27
+  },
+  {
+    "name": "Schools and Educational Services ( Not Elsewhere Classified)",
+    "code": "8299",
+    "description": "Schools and Educational Services ( Not Elsewhere Classified)",
+    "categoryId": 27
+  },
+  {
+    "name": "Charitable and Social Service Organizations",
+    "code": "8398",
+    "description": "Charitable and Social Service Organizations",
+    "categoryId": 28
+  },
+  {
+    "name": "Civic, Fraternal, and Social Associations",
+    "code": "8641",
+    "description": "Civic, Fraternal, and Social Associations",
+    "categoryId": 28
+  },
+  {
+    "name": "Political Organizations",
+    "code": "8651",
+    "description": "Political Organizations",
+    "categoryId": 28
+  },
+  {
+    "name": "Religious Organizations",
+    "code": "8661",
+    "description": "Religious Organizations",
+    "categoryId": 29
+  },
+  {
+    "name": "Automobile Associations",
+    "code": "8675",
+    "description": "Automobile Associations",
+    "categoryId": 28
+  },
+  {
+    "name": "Membership Organizations ( Not Elsewhere Classified)",
+    "code": "8699",
+    "description": "Membership Organizations ( Not Elsewhere Classified)",
+    "categoryId": 29
+  },
+  {
+    "name": "Testing Laboratories ( non - medical)",
+    "code": "8734",
+    "description": "Testing Laboratories ( non - medical)",
+    "categoryId": 30
+  },
+  {
+    "name": "Architectural - Engineering and Surveying Services",
+    "code": "8911",
+    "description": "Architectural - Engineering and Surveying Services",
+    "categoryId": 31
+  },
+  {
+    "name": "Accounting, Auditing, and Bookkeeping Services",
+    "code": "8931",
+    "description": "Accounting, Auditing, and Bookkeeping Services",
+    "categoryId": 31
+  },
+  {
+    "name": "Professional Services ( Not Elsewhere Defined)",
+    "code": "8999",
+    "description": "Professional Services ( Not Elsewhere Defined)",
+    "categoryId": 31
+  },
+  {
+    "name": "Court Costs, including Alimony and Child Support",
+    "code": "9211",
+    "description": "Court Costs, including Alimony and Child Support",
+    "categoryId": 32
+  },
+  {
+    "name": "Fines",
+    "code": "9222",
+    "description": "Fines",
+    "categoryId": 32
+  },
+  {
+    "name": "Bail and Bond Payments",
+    "code": "9223",
+    "description": "Bail and Bond Payments",
+    "categoryId": 32
+  },
+  {
+    "name": "Tax Payments",
+    "code": "9311",
+    "description": "Tax Payments",
+    "categoryId": 33
+  },
+  {
+    "name": "Government Services ( Not Elsewhere Classified)",
+    "code": "9399",
+    "description": "Government Services ( Not Elsewhere Classified)",
+    "categoryId": 33
+  },
+  {
+    "name": "Postal Services - Government Only",
+    "code": "9402",
+    "description": "Postal Services - Government Only",
+    "categoryId": 34
+  },
+  {
+    "name": "Intra - Government Transactions ",
+    "code": "9405",
+    "description": "Intra - Government Transactions ",
+    "categoryId": 34
+  },
+  {
+    "name": "Automated Referral Service (For Visa Only)",
+    "code": "9700",
+    "description": "Automated Referral Service (For Visa Only)",
+    "categoryId": 35
+  },
+  {
+    "name": "Visa Credential Service ( For Visa Only)",
+    "code": "9701",
+    "description": "Visa Credential Service ( For Visa Only)",
+    "categoryId": 35
+  },
+  {
+    "name": "GCAS Emergency Services ( For Visa Only)",
+    "code": "9702",
+    "description": "GCAS Emergency Services ( For Visa Only)",
+    "categoryId": 35
+  },
+  {
+    "name": "Intra - Company Purchases ( For Visa Only)",
+    "code": "9950",
+    "description": "Intra - Company Purchases ( For Visa Only)",
+    "categoryId": 36
+  }
+]

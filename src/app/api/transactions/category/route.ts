@@ -1,0 +1,104 @@
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
+
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const paramFrom = url.searchParams.get("from");
+  const paramTo = url.searchParams.get("to");
+
+  let fromDate = paramFrom ? new Date(paramFrom) : null;
+  let toDate = paramTo ? new Date(paramTo) : null;
+
+  if (!fromDate || !toDate) {
+    const today = new Date();
+    fromDate = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+    toDate = today;
+  }
+
+  const subCategories = await prisma.transaction.findMany({
+    orderBy: {
+      subcategory: {
+        name: "asc",
+      },
+    },
+    where: {
+      createdAt: {
+        gte: fromDate,
+        lte: toDate,
+      },
+      agent: "RECEIVER",
+    },
+    select: {
+      id: true,
+      amount: true,
+      currencyCode: true,
+      // merchant: {
+      //   select: {
+      //     id: true,
+      //     name: true,
+      //   },
+      // },
+      subcategory: {
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+              description: true,
+              color: true,
+            },
+          },
+        }
+      },
+    },
+  });
+  console.log('subCategories: ', subCategories.length);
+
+  interface CombinedCategory {
+    id: number;
+    name: string;
+    color: string;
+    category: {
+      totalExpenses: number;
+      transactionsCount: number;
+    };
+  }
+
+  const combinedCategories = new Map<string, CombinedCategory>();
+  subCategories.forEach((transaction) => {
+    // if (transaction.subcategory && transaction.subcategory.category) {
+      
+      const categoryIdStr = String(transaction.subcategory?.categoryId ?? 0) ;
+      if (combinedCategories.has(categoryIdStr)) {
+        console.group("calucation")
+        const existingCategory = combinedCategories.get(categoryIdStr)!;
+        console.log('before: ', existingCategory.category.totalExpenses);
+        existingCategory.category.totalExpenses += Math.abs(transaction.amount);
+        console.log('transaction.amount: ', transaction.amount, Math.abs(transaction.amount));
+        console.log('after ', existingCategory.category.totalExpenses);
+        existingCategory.category.transactionsCount += 1;
+        console.groupEnd();
+      } else {
+        combinedCategories.set(categoryIdStr, {
+          id: transaction.subcategory?.categoryId ?? 0,
+          name: transaction.subcategory?.category.name ?? "Uden kategori",
+          color: transaction.subcategory?.category.color ?? "#d1d5dc",
+          category: {
+            totalExpenses: Math.abs(transaction.amount),
+            transactionsCount: 1,
+          },
+        });
+      }
+  });
+
+  
+  const mappedCategories: CombinedCategory[] = Array.from(combinedCategories.values());
+  const sortedCategories = mappedCategories.sort((a, b) => {
+    return b.category.totalExpenses - a.category.totalExpenses;
+  });
+
+  return new Response(JSON.stringify(sortedCategories), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
+}
