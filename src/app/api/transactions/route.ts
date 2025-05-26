@@ -1,7 +1,7 @@
 import { PrismaClient, AgentType } from "@prisma/client";
 const prisma = new PrismaClient();
 
-interface Transaction {
+export interface Transaction {
   accountCombinedKey: string;
   transactionCombinedKey: string;
   bookingDate: string;
@@ -62,7 +62,7 @@ interface Transaction {
   };
 }
 
-interface TransactionJSON {
+export interface TransactionJSON {
   transactionList: Transaction[];
 }
 
@@ -79,6 +79,36 @@ export async function GET(request: Request) {
     fromDate = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
     toDate = today;
   }
+
+  const firstInRange = await prisma.transaction.findFirst({
+    where: {
+      createdAt: {
+        gte: fromDate,
+        lte: toDate,
+      },
+    },
+    select: {
+      createdAt: true,
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+
+  const lastInRange = await prisma.transaction.findFirst({
+    where: {
+      createdAt: {
+        gte: fromDate,
+        lte: toDate,
+      },
+    },
+    select: {
+      createdAt: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
   const totalExpenses = await prisma.transaction.aggregate({
     _sum: {
@@ -126,6 +156,8 @@ export async function GET(request: Request) {
         totalIncome: totalIncome._sum.amount,
         transactionsCount: totalIncome._count.amount,
       },
+      firstInRange: firstInRange?.createdAt ?? null,
+      lastInRange: lastInRange?.createdAt ?? null,
     }),
     {
       status: 200,
@@ -243,7 +275,9 @@ export async function POST(request: Request) {
 
       await prisma.transaction.createMany({
         data: transactionData,
-      });
+        // skipDuplicates: true, // Skip duplicates based on transactionKey
+      })
+
     } catch (error) {
       console.log("error: ", error);
       return new Response("Error saving transactions to the database", {

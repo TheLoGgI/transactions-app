@@ -1,16 +1,13 @@
 "use client"
-import useSWRMutation from 'swr/mutation'
 
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { Suspense, useCallback, useMemo, useState } from "react"
 
 import useSWR from "swr"
 import { TransactionsSummary } from "./transactionsSumarry"
 import { TransactionsCategory } from "./transactions-category"
 import { DateRangeSelector } from "./date-range-selector"
-import { Loader2, LoaderIcon, Upload } from "lucide-react"
-import { Button } from "./ui/button"
-import { Toaster } from "./ui/sonner"
-import { toast } from "sonner"
+import type { TransactionRange } from '@/app/api/transactions/general/route'
+import { UploadButton } from './uploadButton'
 
 interface TransactionsSummaryResponse {
   expenses: {
@@ -34,20 +31,6 @@ export interface TransactionCategory {
 }
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
-const uploadTransactions = (url: string, { arg }: { arg: File }) => {
-  const formData = new FormData()
-  formData.append("transactions", arg)
-
-  return fetch(url, {
-    method: "POST",
-    body: formData,
-  }).then((res) => {
-    if (!res.ok) {
-      throw new Error("Failed to upload transactions")
-    }
-    return res.json()
-  })
-}
 
 export function TransactionsDashboard() {
   const today = new Date()
@@ -56,28 +39,14 @@ export function TransactionsDashboard() {
     from: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000), // May 1, 2023
     to: today,
   })
-    const [isUploading, setIsUploading] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+    // const [isUploading, setIsUploading] = useState(false)
   const urlQuery = useMemo(() => `?from=${dateRange.from.toISOString()}&to=${(dateRange.to ?? dateRange.from).toISOString()}`, [dateRange.from, dateRange.to])
   const { data: stats, isLoading: statsIsLoading, isValidating } = useSWR<TransactionsSummaryResponse>(`/api/transactions${urlQuery}`, fetcher)
-  console.log('statsIsLoading: ', statsIsLoading);
-    const { trigger, isMutating } = useSWRMutation('/api/transactions', uploadTransactions)
+    // const { trigger, isMutating } = useSWRMutation('/api/transactions', uploadTransactions)
+  const {data: dataRange} = useSWR<TransactionRange>(`/api/transactions/general`, fetcher)
 
-
-//   useEffect(() => {
-//     console.group("state")
-//     console.log(stats, 'stats in TransactionsDashboard');
-//     console.log(statsIsLoading, 'loading');
-//     console.log(isValidating, 'isValidating');
-//     console.groupEnd()
-// }, [isValidating, stats, statsIsLoading])
-
-  // Helper function to check if a date is within the selected range
-  // const isDateInRange = (dateString: string) => {
-  //   if (!dateRange.from || !dateRange.to) return true
-  //   const transactionDate = new Date(dateString)
-  //   return transactionDate >= dateRange.from && transactionDate <= dateRange.to
-  // }
+  // Calculate income and expenses separately
+  const totalExpenses = stats?.expenses?.totalExpenses ?? 0
 
   // Helper function to set predefined date ranges
   const setPredefinedRange = useCallback((period: string) => {
@@ -115,75 +84,6 @@ export function TransactionsDashboard() {
     }
   }, [])
 
-  // if (statsIsLoading && !stats) {
-  //   return <div>Loading stats...</div>
-  // }
-
-  // Calculate income and expenses separately
-  const totalExpenses = stats?.expenses?.totalExpenses ?? 0
-
-
-  // File upload handler
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-
-    if (file.type !== "application/json") {
-      toast("Invalid file type", {
-        description: "Please upload a JSON file.",
-      })
-      return
-    }
-
-    setIsUploading(true)
-
-    try {
-      await trigger(file)
-      
-      // const text = await file.text()
-      // console.log('text: ', text);
-      // const data = JSON.parse(text)
-
-      // Validate the JSON structure
-      // if (!Array.isArray(data.transactions)) {
-      //   throw new Error("JSON must contain a 'transactions' array")
-      // }
-
-      // Simulate processing time
-      // await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Add to existing transactions
-      // setCategorizedTransactions((prev) => [...prev, ...newCategorized])
-      // setUncategorizedTransactions((prev) => [...prev, ...newUncategorized])
-
-      // Show success message
-      toast("Transactions uploaded successfully!", {
-          // description: `Added ${validTransactions.length} transactions to your dashboard.${invalidTransactions.length > 0 ? ` ${invalidTransactions.length} invalid transactions were skipped.` : ""}`,
-          // action: {
-          //   label: "Undo",
-          //   onClick: () => console.log("Undo"),
-          // },
-        })
-
-      // Reset file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ""
-      }
-    } catch (error) {
-      console.error("Error parsing JSON:", error)
-      toast("Upload failed", {
-        description: error instanceof Error ? error.message : "Failed to parse the JSON file.",
-      })
-    } finally {
-      setIsUploading(false)
-    }
-  }
-
-  // Trigger file input
-  const triggerFileUpload = () => {
-    fileInputRef.current?.click()
-  }
-
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex flex-col gap-6">
@@ -193,32 +93,16 @@ export function TransactionsDashboard() {
             <p className="text-muted-foreground">
               View and categorize your transactions to better understand your spending habits.
             </p>
+            <p className="text-muted-foreground">
+              {dataRange?.firstInRange && dataRange?.lastInRange
+                ? `Data available from ${new Date(dataRange.firstInRange).toLocaleDateString("da-DK", {dateStyle: "long"})} to ${new Date(dataRange.lastInRange).toLocaleDateString("da-DK", {dateStyle: "long"})}`
+                : "No data available yet."}
+            </p>
           </div>
           
-                    {/* Controls */}
+          {/* Controls */}
           <div className="flex items-center gap-2">
-           {/* File Upload Button */}
-            <Button
-              variant="outline"
-              onClick={triggerFileUpload}
-              disabled={isUploading || statsIsLoading}
-              className="flex items-center gap-2"
-            >
-              {isUploading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Uploading...
-                </>
-              ) : (
-                <>
-                  <Upload className="h-4 w-4" />
-                  Upload JSON
-                </>
-              )}
-            </Button>
-
-            {/* Hidden file input */}
-            <input ref={fileInputRef} type="file" accept=".json" onChange={handleFileUpload} className="hidden" />
+           <UploadButton />
 
           {/* Date Range Selector */}
           <DateRangeSelector selectedPeriod={selectedPeriod} onChange={setPredefinedRange} />

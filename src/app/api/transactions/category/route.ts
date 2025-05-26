@@ -52,7 +52,6 @@ export async function GET(request: Request) {
       },
     },
   });
-  console.log('subCategories: ', subCategories.length);
 
   interface CombinedCategory {
     id: number;
@@ -70,14 +69,9 @@ export async function GET(request: Request) {
       
       const categoryIdStr = String(transaction.subcategory?.categoryId ?? 0) ;
       if (combinedCategories.has(categoryIdStr)) {
-        console.group("calucation")
         const existingCategory = combinedCategories.get(categoryIdStr)!;
-        console.log('before: ', existingCategory.category.totalExpenses);
         existingCategory.category.totalExpenses += Math.abs(transaction.amount);
-        console.log('transaction.amount: ', transaction.amount, Math.abs(transaction.amount));
-        console.log('after ', existingCategory.category.totalExpenses);
         existingCategory.category.transactionsCount += 1;
-        console.groupEnd();
       } else {
         combinedCategories.set(categoryIdStr, {
           id: transaction.subcategory?.categoryId ?? 0,
