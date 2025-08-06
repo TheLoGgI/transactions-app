@@ -1,254 +1,77 @@
 [
   {
-    "id": 1,
-    "prefix": 48,
-    "name": "Telecommunication Services",
-    "description": "Services related to telecommunication, including phone, fax, and cable.",
-    "color": "#36A2EB"
+    "name": "Bolig",
+    "description": "Udgifter relateret til bolig og husleje.",
+    "color": "#2980B9"
   },
   {
-    "id": 2,
-    "prefix": 49,
-    "name": "Utilities",
-    "description": "Electric, gas, water, and other utility services.",
-    "color": "#FF9F40"
+    "name": "Forsikringer",
+    "description": "Forsikringsbetalinger og relaterede udgifter.",
+    "color": "#F1C40F"
   },
   {
-    "id": 3,
-    "prefix": 50,
-    "name": "Motor Vehicle & Equipment",
-    "description": "Motor vehicle supplies, parts, and equipment.",
-    "color": "#FFCE56"
-  },
-  {
-    "id": 4,
-    "prefix": 51,
-    "name": "Office & Commercial Supplies",
-    "description": "Office supplies, furniture, and commercial equipment.",
-    "color": "#9966FF"
-  },
-  {
-    "id": 5,
-    "prefix": 52,
-    "name": "Home Supply & Building Materials",
-    "description": "Home improvement, building materials, and hardware.",
-    "color": "#E74C3C"
-  },
-  {
-    "id": 6,
-    "prefix": 53,
-    "name": "General Merchandise Stores",
-    "description": "Department stores, discount stores, and general merchandise.",
-    "color": "#4BC0C0"
-  },
-  {
-    "id": 7,
-    "prefix": 54,
-    "name": "Food Stores",
-    "description": "Grocery stores, supermarkets, and specialty food shops.",
-    "color": "#FF6384"
-  },
-  {
-    "id": 8,
-    "prefix": 55,
-    "name": "Automotive Dealers",
-    "description": "Car, truck, and motorcycle dealers and related services.",
-    "color": "#FFCE56"
-  },
-  {
-    "id": 9,
-    "prefix": 56,
-    "name": "Apparel & Accessory Stores",
-    "description": "Clothing, shoes, and accessory retailers.",
-    "color": "#9B59B6"
-  },
-  {
-    "id": 10,
-    "prefix": 57,
-    "name": "Home Furnishings & Equipment",
-    "description": "Furniture, home furnishings, and equipment stores.",
-    "color": "#2ECC71"
-  },
-  {
-    "id": 11,
-    "prefix": 58,
-    "name": "Eating & Drinking Places",
-    "description": "Restaurants, cafes, bars, and other eating places.",
-    "color": "#F39C12"
-  },
-  {
-    "id": 12,
-    "prefix": 59,
-    "name": "Miscellaneous Retail Stores",
-    "description": "Specialty and miscellaneous retail stores.",
-    "color": "#28A745"
-  },
-  {
-    "id": 13,
-    "prefix": 60,
-    "name": "Financial Institutions",
-    "description": "Banks, credit unions, and other financial institutions.",
-    "color": "#34495E"
-  },
-  {
-    "id": 14,
-    "prefix": 62,
-    "name": "Security Brokers/Dealers",
-    "description": "Security brokers, dealers, and investment services.",
-    "color": "#17A2B8"
-  },
-  {
-    "id": 15,
-    "prefix": 63,
-    "name": "Insurance",
-    "description": "Insurance sales, underwriting, and premium services.",
-    "color": "#F39C12"
-  },
-  {
-    "id": 16,
-    "prefix": 64,
-    "name": "Insurance (Other)",
-    "description": "Other insurance-related services.",
-    "color": "#F7CA18"
-  },
-  {
-    "id": 17,
-    "prefix": 65,
-    "name": "Real Estate",
-    "description": "Real estate sales, rentals, and related services.",
-    "color": "#E67E22"
-  },
-  {
-    "id": 18,
-    "prefix": 70,
-    "name": "Lodging",
-    "description": "Hotels, motels, resorts, and other lodging services.",
-    "color": "#2ECC71"
-  },
-  {
-    "id": 19,
-    "prefix": 72,
-    "name": "Personal Services",
-    "description": "Laundry, cleaning, and other personal services.",
-    "color": "#28A745"
-  },
-  {
-    "id": 20,
-    "prefix": 73,
-    "name": "Business Services",
-    "description": "Advertising, consulting, and other business services.",
-    "color": "#6F42C1"
-  },
-  {
-    "id": 21,
-    "prefix": 75,
-    "name": "Automotive Services",
-    "description": "Car rentals, repairs, and automotive services.",
-    "color": "#FFCE56"
-  },
-  {
-    "id": 22,
-    "prefix": 76,
-    "name": "Repair Services",
-    "description": "Repair shops for electronics, appliances, and more.",
+    "name": "Fagforening & A-Kasse",
+    "description": "Fagforenings- og a-kassekontingent (HK).",
     "color": "#8E44AD"
   },
   {
-    "id": 23,
-    "prefix": 78,
-    "name": "Motion Pictures",
-    "description": "Movie theaters, video production, and distribution.",
+    "name": "El, Vand, Varme",
+    "description": "Udgifter til mobil og fastnettelefon.",
     "color": "#36A2EB"
   },
   {
-    "id": 24,
-    "prefix": 79,
-    "name": "Amusement & Recreation",
-    "description": "Amusement parks, tourist attractions, and recreation.",
-    "color": "#4BC0C0"
+    "name": "Transport",
+    "description": "Offentlig transport, brændstof og rejseudgifter.",
+    "color": "#16A085"
   },
   {
-    "id": 25,
-    "prefix": 80,
-    "name": "Health Services",
-    "description": "Doctors, hospitals, and other health services.",
-    "color": "#FF6384"
-  },
-  {
-    "id": 26,
-    "prefix": 81,
-    "name": "Legal Services",
-    "description": "Legal services and attorneys.",
-    "color": "#34495E"
-  },
-  {
-    "id": 27,
-    "prefix": 82,
-    "name": "Educational Services",
-    "description": "Schools, colleges, and educational services.",
-    "color": "#17A2B8"
-  },
-  {
-    "id": 28,
-    "prefix": 83,
-    "name": "Social Services",
-    "description": "Child care, social work, and related services.",
-    "color": "#6F42C1"
-  },
-  {
-    "id": 29,
-    "prefix": 86,
-    "name": "Membership Organizations",
-    "description": "Religious, civic, and membership organizations.",
-    "color": "#BDC3C7"
-  },
-  {
-    "id": 30,
-    "prefix": 87,
-    "name": "Professional Services",
-    "description": "Architectural, engineering, and other professional services.",
-    "color": "#9B59B6"
-  },
-  {
-    "id": 31,
-    "prefix": 89,
-    "name": "Professional Services (Other)",
-    "description": "Other professional and technical services.",
-    "color": "#8E44AD"
-  },
-  {
-    "id": 32,
-    "prefix": 92,
-    "name": "Government Services",
-    "description": "Court costs, taxes, and other government services.",
-    "color": "#E74C3C"
-  },
-  {
-    "id": 33,
-    "prefix": 93,
-    "name": "Government Services (Other)",
-    "description": "Other government-related services.",
+    "name": "Hus Vedligeholdeslse",
+    "description": "Fælleskøkkenudgifter på kollegiet, Tøjvask",
     "color": "#E67E22"
   },
   {
-    "id": 34,
-    "prefix": 94,
-    "name": "Postal Services",
-    "description": "Postal and delivery services.",
-    "color": "#F39C12"
+    "name": "Internet / Telefon",
+    "description": "Udgifter til internetudbyder.",
+    "color": "#00BFFF"
   },
   {
-    "id": 35,
-    "prefix": 97,
-    "name": "Visa Services",
-    "description": "Visa and travel-related services.",
-    "color": "#2ECC71"
+    "name": "Underholdning & Streaming Tjenester",
+    "description": "",
+    "color": "#A3CBFF"
   },
   {
-    "id": 36,
-    "prefix": 99,
-    "name": "Miscellaneous",
-    "description": "Other uncategorized or miscellaneous services.",
-    "color": "#BDC3C7"
+    "name": "Tøj & Personlige pleje",
+    "description": "",
+    "color": "#113CCF"
+  },
+  {
+    "name": "Software as a Service",
+    "description": "Etc. Online services",
+    "color": "#34A853"
+  },
+  {
+    "name": "Indkøb",
+    "description": "Generelle indkøb og dagligvarer.",
+    "color": "#27AE60"
+  },
+  {
+    "name": "Diverse",
+    "description": "Diverse og ikke-kategoriserede udgifter.",
+    "color": "#95A5A6"
+  },
+  {
+    "name": "Restaurant / Take Away",
+    "description": "Spisning ude på restaurant.",
+    "color": "#F44336"
+  },
+  {
+    "name": "Investeringer",
+    "description": "",
+    "color": "#FF9800"
+  },
+  {
+  "name": "Opspariong",
+  "description": "",
+  "color": "#F39C12"
   }
 ]

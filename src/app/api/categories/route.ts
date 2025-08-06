@@ -3,7 +3,13 @@ const prisma = new PrismaClient()
 
 export async function GET(request: Request) {
   // For example, fetch data from your DB here
-    const categories = await prisma.categories.findMany()
+    const categories = await prisma.categories.findMany({
+      select: {
+        id: true,
+        name: true,
+        color: true,
+      }
+    })
 
   return new Response(JSON.stringify(categories), {
     status: 200,

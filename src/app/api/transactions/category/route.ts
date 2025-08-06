@@ -75,8 +75,8 @@ export async function GET(request: Request) {
       } else {
         combinedCategories.set(categoryIdStr, {
           id: transaction.subcategory?.categoryId ?? 0,
-          name: transaction.subcategory?.category.name ?? "Uden kategori",
-          color: transaction.subcategory?.category.color ?? "#d1d5dc",
+          name: transaction.subcategory?.category?.name ?? "Uden kategori",
+          color: transaction.subcategory?.category?.color ?? "#d1d5dc",
           category: {
             totalExpenses: Math.abs(transaction.amount),
             transactionsCount: 1,

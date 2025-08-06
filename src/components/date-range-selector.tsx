@@ -21,7 +21,7 @@ export const DateRangeSelector = ({selectedPeriod, onChange}: DateRangeProps) =>
                 <SelectItem value="30days">Last 30 days</SelectItem>
                 <SelectItem value="3months">Last 3 months</SelectItem>
                 <SelectItem value="6months">Last 6 months</SelectItem>
-                <SelectItem value="1year">Last year</SelectItem>
+                <SelectItem value="1year">Last 12 months</SelectItem>
                 <SelectItem value="all">All time</SelectItem>
                 {/* <SelectItem value="custom">Custom range</SelectItem> */}
               </SelectContent>

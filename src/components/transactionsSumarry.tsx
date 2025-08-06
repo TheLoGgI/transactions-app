@@ -21,8 +21,7 @@ interface TransactionsSummaryResponse {
 export function TransactionsSummary({stats, isStale}: TransactionsSummaryResponse) {
 
  const totalIncome = stats?.income.totalIncome ?? 0
-const totalExpenses = stats?.expenses.totalExpenses ?? 0
-    
+ const totalExpenses = stats?.expenses.totalExpenses ?? 0
   
     return (
       <div className="relative">
@@ -57,7 +56,7 @@ const totalExpenses = stats?.expenses.totalExpenses ?? 0
               <p className="text-xs text-muted-foreground">
                 {stats?.expenses.transactionsCount}{" "}
                 udgiftstransaktioner
-                {totalIncome > 0 && ` (${((totalExpenses / totalIncome) * 100).toFixed(1)}% af indkomst)`}
+                {totalIncome > 0 && ` (${Math.abs(((totalExpenses / totalIncome) * 100)).toFixed(1)}% af indkomst)`}
               </p>
             </CardContent>
           </Card>
@@ -67,13 +66,14 @@ const totalExpenses = stats?.expenses.totalExpenses ?? 0
             </CardHeader>
             <CardContent>
               <div
-                className={`text-2xl font-bold ${totalIncome - totalExpenses >= 0 ? "text-green-600" : "text-red-600"}`}
+                className={`text-2xl font-bold ${totalIncome + totalExpenses >= 0 ? "text-green-600" : "text-red-600"}`}
               >
-                {(totalIncome - totalExpenses).toLocaleString("da-DK", { style: "currency", currency: "DKK" })}
+                {(totalIncome + totalExpenses).toLocaleString("da-DK", { style: "currency", currency: "DKK" })}
+
               </div>
               <p className="text-xs text-muted-foreground">
-                {totalIncome - totalExpenses >= 0 ? "Overskud" : "Underskud"}
-                {totalIncome > 0 && ` (${(((totalIncome - totalExpenses) / totalIncome) * 100).toFixed(1)}% af indkomst)`}
+                {totalIncome + totalExpenses >= 0 ? "Overskud" : "Underskud"}
+                {totalIncome > 0 && ` (${(((totalIncome + totalExpenses) / totalIncome) * 100).toFixed(1)}% af indkomst)`}
               </p>
             </CardContent>
           </Card>

@@ -1,10 +1,11 @@
 "use client";
 import { TransactionPieChart } from "./transaction-pie-chart";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import type { TransactionCategory } from "./transactions-dashboard";
 import useSWR from "swr";
-import { Loader2 } from "lucide-react";
+import { Edit2, Loader2 } from "lucide-react";
 import { useMemo } from "react";
+import Link from "next/link";
 
 interface TransactionsCategoryProps {
     totalExpenses: number;
@@ -15,6 +16,7 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export const TransactionsCategory = ({ totalExpenses, query }: TransactionsCategoryProps) => {
     const { data: categories, isLoading, isValidating } = useSWR<TransactionCategory[]>(`/api/transactions/category${query}`, fetcher)
+    // console.log('categories: ', categories);
 
     const chartData = useMemo(() => categories?.map((category) => ({
         name: category.name,
@@ -49,6 +51,11 @@ export const TransactionsCategory = ({ totalExpenses, query }: TransactionsCateg
                 <CardHeader>
                     <CardTitle>Udgiftskategorier</CardTitle>
                     <CardDescription>Opdeling af forbrug pr. kategori</CardDescription>
+                    <CardAction>
+                        <Link href="/edit" className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors duration-200 hover:bg-gray-200 hover:text-gray-700">
+                            <Edit2 className="w-4 h-4" />
+                        </Link>
+                    </CardAction>
                 </CardHeader>
                 <CardContent>
                     {(isLoading || isValidating && categories === undefined) ? (

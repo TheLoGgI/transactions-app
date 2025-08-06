@@ -11,11 +11,11 @@ datasource db {
 }
 
 model Transaction {
-    id              String        @id @default(uuid())
-    transactionKey  String        @unique
+    id              String         @id @default(uuid())
+    transactionKey  String         @unique
     merchantId      String?
-    merchant        Merchant?     @relation(fields: [merchantId], references: [id])
-    Sender          Sender?       @relation(fields: [senderId], references: [id])
+    merchant        Merchant?      @relation(fields: [merchantId], references: [id])
+    Sender          Sender?        @relation(fields: [senderId], references: [id])
     senderId        String?
     agent           AgentType
     transactionType String
@@ -23,8 +23,8 @@ model Transaction {
     currencyCode    String
     subcategoryId   Int?
     subcategory     SubCategories? @relation(fields: [subcategoryId], references: [id])
-    createdAt       DateTime      @default(now())
-    updatedAt       DateTime      @updatedAt
+    createdAt       DateTime       @default(now())
+    updatedAt       DateTime       @updatedAt
 
     @@map("transaction")
 }
@@ -33,14 +33,13 @@ model Categories {
     id            Int             @id @default(autoincrement())
     name          String          @unique
     description   String?
-    prefix        Int
     color         String
     createdAt     DateTime        @default(now())
     updatedAt     DateTime        @updatedAt
     SubCategories SubCategories[]
 
     @@index([name])
-    @@map("subcategories")
+    @@map("categories")
 }
 
 model SubCategories {
@@ -50,19 +49,19 @@ model SubCategories {
     description  String?
     createdAt    DateTime      @default(now())
     updatedAt    DateTime      @updatedAt
-    categoryId   Int
-    category     Categories   @relation(fields: [categoryId], references: [id])
+    categoryId   Int?
+    category     Categories?   @relation(fields: [categoryId], references: [id])
     transactions Transaction[]
 
     @@index([name])
-    @@map("categories")
+    @@map("subcategories")
 }
 
 model Merchant {
     id           String        @id @default(uuid())
     name         String
     categoryCode String
-    merchantId   String
+    merchantId   String        @unique
     city         String
     country      String
     createdAt    DateTime      @default(now())
