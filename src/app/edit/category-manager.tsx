@@ -4,21 +4,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Edit2, Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
+import useSWRMutation from "swr/mutation"
 
 interface Category {
   id: number
   name: string
   color: string
-  type?: "income" | "expense"
+  // type?: "income" | "expense"
 }
 
 interface CategoryManagerProps {
-  categories: Category[]
-  onCategoriesChange: (categories: Category[]) => void
+  categoriesData: Category[]
 }
 
 const predefinedColors = [
@@ -41,113 +40,106 @@ const predefinedColors = [
   "#F8C471",
   "#82E0AA",
   "#F1948A",
-  "#85C1E9",
   "#D7BDE2",
   "#A3E4D7",
   "#FAD7A0",
+  "#FF6346",
   "#D5A6BD",
 ]
 
-export function CategoryManager({ categories, onCategoriesChange }: CategoryManagerProps) {
+const handleCategories = async (url: string, { arg }: {arg: { id?: string; name: string; color: string }}) => {
+  const res = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify({
+      categoryName: arg.name,
+      categoryColor: arg.color,
+      categoryId: arg.id,
+    }),
+  })
+  if (!res.ok) {
+    throw new Error("Failed to create or update category")
+  }
+
+  return res
+
+}
+
+
+const deleteCategoryMutation = async (url: string, { arg }: {arg: string}) => {
+  const res = await fetch(url, {
+    method: "DELETE",
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      categoryName: arg,
+    }),
+  })
+  if (!res.ok) {
+    throw new Error("Failed to delete category")
+  }
+
+  return res
+
+}
+
+export function CategoryManager({ categoriesData }: CategoryManagerProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
-  const [newCategoryName, setNewCategoryName] = useState("")
+  const [categories, setCategories] = useState(categoriesData)
+  // const [newCategoryName, setNewCategoryName] = useState("")
   const [newCategoryColor, setNewCategoryColor] = useState(predefinedColors[0])
-  const [newCategoryType, setNewCategoryType] = useState<"income" | "expense">("expense")
-//   const { toast } = useToast()
+  // const [newCategoryType, setNewCategoryType] = useState<"income" | "expense">("expense")
+  //   const { toast } = useToast()
+    const { trigger, isMutating } = useSWRMutation('/api/categories', handleCategories)  
+    const { trigger: deleteCategory, isMutating: isMutationgDelete } = useSWRMutation('/api/categories', deleteCategoryMutation)  
 
-  const handleAddCategory = () => {
-    if (!newCategoryName.trim()) {
+  const handleMutateCategories = async (formData: FormData) => {
+    const name = formData.get('category-name') as string | null
+    const newColor = formData.get('category-color') as string
+    const id = formData.get('category-id') as string
+    
+    if (typeof name !== "string" || !name.trim()) {
       toast.warning("Invalid category name", {
         description: "Please enter a category name.",
       })
       return
     }
 
-    // Check if category name already exists
-    if (categories.some((cat) => cat.name.toLowerCase() === newCategoryName.trim().toLowerCase())) {
-      toast.warning("Category already exists", {
-        description: "A category with this name already exists.",
+    const newCategory: { name: string; color: string; id?: string } = {
+      ...(id && id.trim() !== "" ? { id: id } : {}),
+      name: name.trim(),
+      color: newColor,
+    }
+    // console.log('newCategory: ', newCategory);
+
+    const confirmedCategory = await trigger( newCategory)
+    if (confirmedCategory.ok) {
+      const response = await confirmedCategory.json() as Category
+      toast.success("Category added successfully!", {
+        description: `"${response.name}" has been added to your categories.`,
       })
-      return
     }
 
-    const newCategory: Category = {
-      id: Math.max(...categories.map((c) => c.id), 0) + 1,
-      name: newCategoryName.trim(),
-      color: newCategoryColor ?? predefinedColors[0],
-      type: newCategoryType,
-    }
-
-    onCategoriesChange([...categories, newCategory])
-
-    toast.success("Category added successfully!", {
-      description: `"${newCategory.name}" has been added to your categories.`,
-    })
-
-    // Reset form
-    setNewCategoryName("")
-    setNewCategoryColor(predefinedColors[0])
-    setNewCategoryType("expense")
-    setIsDialogOpen(false)
   }
 
+
   const handleEditCategory = (category: Category) => {
+    console.log('category: ', category);
     setEditingCategory(category)
-    setNewCategoryName(category.name)
+    // setNewCategoryName(category.name)
     setNewCategoryColor(category.color)
-    setNewCategoryType(category.type ?? "expense")
+    // setNewCategoryType(category.type ?? "expense")
     setIsDialogOpen(true)
   }
 
-  const handleUpdateCategory = () => {
-    if (!editingCategory) return
-
-    if (!newCategoryName.trim()) {
-      toast.warning( "Invalid category name",{
-        description: "Please enter a category name.",
-      })
-      return
-    }
-
-    // Check if category name already exists (excluding current category)
-    if (
-      categories.some(
-        (cat) => cat.id !== editingCategory.id && cat.name.toLowerCase() === newCategoryName.trim().toLowerCase(),
-      )
-    ) {
-      toast.warning("Category already exists", {
-        description: "A category with this name already exists.",
-      })
-      return
-    }
-
-    const updatedCategories = categories.map((cat) =>
-      cat.id === editingCategory.id
-        ? { ...cat, name: newCategoryName.trim(), color: newCategoryColor ?? predefinedColors[0], type: newCategoryType }
-        : cat,
-    )
-
-    onCategoriesChange(updatedCategories as Category[])
-
-    toast.success("Category updated successfully!", {
-      description: `"${newCategoryName}" has been updated.`,
-    })
-
-    // Reset form
-    setEditingCategory(null)
-    setNewCategoryName("")
-    setNewCategoryColor(predefinedColors[0])
-    setNewCategoryType("expense")
-    setIsDialogOpen(false)
-  }
-
-  const handleDeleteCategory = (categoryId: number) => {
+  const handleDeleteCategory = async (categoryId: number) => {
     const categoryToDelete = categories.find((cat) => cat.id === categoryId)
     if (!categoryToDelete) return
 
-    const updatedCategories = categories.filter((cat) => cat.id !== categoryId)
-    onCategoriesChange(updatedCategories)
+    await deleteCategory(categoryToDelete.name)
+    const filtedCategoires = categories.filter((cat) => cat.id !== categoryId)
+    setCategories(filtedCategoires)
 
     toast.success("Category deleted", {
       description: `"${categoryToDelete.name}" has been removed from your categories.`,
@@ -156,18 +148,19 @@ export function CategoryManager({ categories, onCategoriesChange }: CategoryMana
 
   const resetForm = () => {
     setEditingCategory(null)
-    setNewCategoryName("")
+    // setNewCategoryName("")
     setNewCategoryColor(predefinedColors[0])
-    setNewCategoryType("expense")
+    // setNewCategoryType("expense")
   }
 
   const handleDialogClose = () => {
     setIsDialogOpen(false)
+    setEditingCategory(null)
     resetForm()
   }
 
-  const expenseCategories = categories.filter((cat) => cat.type !== "income")
-  const incomeCategories = categories.filter((cat) => cat.type === "income")
+  // const expenseCategories = categories.filter((cat) => cat.type !== "income")
+  // const incomeCategories = categories.filter((cat) => cat.type === "income")
 
   return (
     <Card>
@@ -184,69 +177,66 @@ export function CategoryManager({ categories, onCategoriesChange }: CategoryMana
                 Add Category
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>{editingCategory ? "Edit Category" : "Add New Category"}</DialogTitle>
-                <DialogDescription>
-                  {editingCategory
-                    ? "Update the category details below."
-                    : "Create a new category for organizing your transactions."}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="category-name">Category Name</Label>
-                  <Input
-                    id="category-name"
-                    value={newCategoryName}
-                    onChange={(e) => setNewCategoryName(e.target.value)}
-                    placeholder="Enter category name"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="category-type">Category Type</Label>
-                  <Select
-                    value={newCategoryType}
-                    onValueChange={(value: "income" | "expense") => setNewCategoryType(value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="expense">Expense</SelectItem>
-                      <SelectItem value="income">Income</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="category-color">Category Color</Label>
-                  <div className="grid grid-cols-8 gap-2">
-                    {predefinedColors.map((color) => (
-                      <button
-                        key={color}
-                        type="button"
-                        className={`w-8 h-8 rounded-full border-2 ${
-                          newCategoryColor === color ? "border-gray-800" : "border-gray-300"
-                        }`}
-                        style={{ backgroundColor: color }}
-                        onClick={() => setNewCategoryColor(color)}
-                      />
-                    ))}
+            <DialogContent className="sm:max-w-[425px]" showCloseButton={false}>
+              <form action={handleMutateCategories}>
+                <DialogHeader>
+                  <DialogTitle>{editingCategory ? "Edit Category" : "Add New Category"}</DialogTitle>
+                  <DialogDescription>
+                    {editingCategory
+                      ? "Update the category details below."
+                      : "Create a new category for organizing your transactions."}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="category-name">Category Name</Label>
+                    <Input
+                      id="category-name"
+                      name="category-name"
+                      defaultValue={editingCategory?.name}
+                      // onChange={(e) => setNewCategoryName(e.target.value)}
+                      placeholder="Enter category name"
+                    />
                   </div>
-                  <div className="flex items-center gap-2 mt-2">
-                    <div className="w-6 h-6 rounded-full border" style={{ backgroundColor: newCategoryColor }} />
-                    <span className="text-sm text-muted-foreground">Selected color</span>
+                  <div className="grid gap-2">
+                    <Label htmlFor="category-color">Category Color</Label>
+                    <div className="grid grid-cols-8 gap-2">
+                      {predefinedColors.map((color) => (
+                        <button
+                          key={color}
+                          type="button"
+                          className={`w-8 h-8 rounded-full border-2 ${newCategoryColor === color ? "border-gray-800" : "border-gray-300"
+                            }`}
+                          style={{ backgroundColor: color }}
+                          onClick={() => setNewCategoryColor(color)}
+                        />
+                      ))}
+                    </div>
+                    <input
+                      type="hidden"
+                      name="category-color"
+                      value={newCategoryColor}
+                    />
+                    <input
+                      type="hidden"
+                      name="category-id"
+                      value={editingCategory?.id}
+                    />
+                    <div className="flex items-center gap-2 mt-2">
+                      <div className="w-6 h-6 rounded-full border" style={{ backgroundColor: newCategoryColor }} />
+                      <span className="text-sm text-muted-foreground">Selected color</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={handleDialogClose}>
-                  Cancel
-                </Button>
-                <Button onClick={editingCategory ? handleUpdateCategory : handleAddCategory}>
-                  {editingCategory ? "Update Category" : "Add Category"}
-                </Button>
-              </DialogFooter>
+                <DialogFooter>
+                  <Button type="reset" variant="outline" onClick={handleDialogClose}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" onClick={() => handleMutateCategories}>
+                    {editingCategory ? "Update Category" : "Add Category"}
+                  </Button>
+                </DialogFooter>
+              </form>
             </DialogContent>
           </Dialog>
         </div>
@@ -257,7 +247,7 @@ export function CategoryManager({ categories, onCategoriesChange }: CategoryMana
           <div>
             <h3 className="text-lg font-semibold mb-3">Expense Categories</h3>
             <div className="grid gap-2">
-              {expenseCategories.map((category) => (
+              {categories.map((category) => (
                 <div
                   key={category.id}
                   className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50"
@@ -281,7 +271,7 @@ export function CategoryManager({ categories, onCategoriesChange }: CategoryMana
                   </div>
                 </div>
               ))}
-              {expenseCategories.length === 0 && (
+              {categories.length === 0 && (
                 <p className="text-muted-foreground text-center py-4">
                   No expense categories yet. Add one to get started!
                 </p>

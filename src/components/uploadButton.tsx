@@ -8,7 +8,14 @@ import type { TransactionRange } from "@/app/api/transactions/general/route"
 import { useRef } from "react"
 
 interface UploadButtonProps {
-    dataRange?: TransactionRange
+  dataRange?: TransactionRange
+}
+
+interface ResponseBodyPost {
+  message: 'Transactions processed successfully',
+  totalTransactions: number,
+  newTransactions: number,
+  skippedTransactions: number,
 }
 
 const uploadTransactions = async (url: string, { arg }: { arg: File }) => {
@@ -27,10 +34,10 @@ const uploadTransactions = async (url: string, { arg }: { arg: File }) => {
 
 }
 
-export const UploadButton = ({dataRange}: UploadButtonProps) => {
-      const fileInputRef = useRef<HTMLInputElement>(null)
-    const { trigger, isMutating } = useSWRMutation('/api/transactions', uploadTransactions)
-const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+export const UploadButton = ({ dataRange }: UploadButtonProps) => {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const { trigger, isMutating } = useSWRMutation('/api/transactions', uploadTransactions)
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
 
@@ -42,7 +49,7 @@ const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     }
 
     try {
-      const  fileContent = await file.text()
+      const fileContent = await file.text()
       const json = JSON.parse(fileContent) as TransactionJSON
       // Access first and last entry directly from the array
       // Use a property that exists on TransactionJSON, e.g., 'date'
@@ -51,29 +58,26 @@ const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
 
       const dbFirstDate = new Date(dataRange?.firstInRange ?? "")
       const dbLastDate = new Date(dataRange?.lastInRange ?? "")
-      console.log('dataRange?.firstInRange: ', dataRange?.firstInRange);
       if (dbFirstDate < firstEntryDate || dbLastDate > lastEntryDate) {
         toast("Date range mismatch", {
-          description: `The uploaded transactions are from ${firstEntryDate.toLocaleDateString("da-DK", {dateStyle: "long"})} to ${lastEntryDate.toLocaleDateString("da-DK", {dateStyle: "long"})}, but your dashboard data is from ${dbFirstDate.toLocaleDateString("da-DK", {dateStyle: "long"})} to ${dbLastDate.toLocaleDateString("da-DK", {dateStyle: "long"})}. Please adjust the date range or upload transactions within the existing range.`,
+          description: `The uploaded transactions are from ${firstEntryDate.toLocaleDateString("da-DK", { dateStyle: "long" })} to ${lastEntryDate.toLocaleDateString("da-DK", { dateStyle: "long" })}, but your dashboard data is from ${dbFirstDate.toLocaleDateString("da-DK", { dateStyle: "long" })} to ${dbLastDate.toLocaleDateString("da-DK", { dateStyle: "long" })}. Please adjust the date range or upload transactions within the existing range.`,
         })
         return
       }
-      
-      const res = await trigger(file)
 
-      // Show success message
-      toast("Transactions uploaded successfully!", {
-          // description: `Added ${validTransactions.length} transactions to your dashboard.${invalidTransactions.length > 0 ? ` ${invalidTransactions.length} invalid transactions were skipped.` : ""}`,
-          // action: {
-          //   label: "Undo",
-          //   onClick: () => console.log("Undo"),
-          // },
+      const res = await trigger(file)
+      if (res.ok) {
+        const body = await res.json() as ResponseBodyPost
+        toast.success(body.message, {
+          description: `Processed ${body.totalTransactions} transactions: ${body.newTransactions} new, ${body.skippedTransactions} skipped`
         })
+      }
 
       // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = ""
       }
+      
     } catch (error) {
       console.error("Error parsing JSON:", error)
       toast("Upload failed", {

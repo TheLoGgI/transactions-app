@@ -11,7 +11,7 @@ export async function GET(request: Request) {
 
   if (!fromDate || !toDate) {
     const today = new Date();
-    fromDate = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+    fromDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
     toDate = today;
   }
 
@@ -63,6 +63,7 @@ export async function GET(request: Request) {
     };
   }
 
+  // console.log('subCategories: ', subCategories);
   const combinedCategories = new Map<string, CombinedCategory>();
   subCategories.forEach((transaction) => {
     // if (transaction.subcategory && transaction.subcategory.category) {

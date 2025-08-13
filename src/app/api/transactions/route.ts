@@ -90,7 +90,7 @@ export async function GET(request: Request) {
 
   if (!fromDate || !toDate) {
     const today = new Date()
-    fromDate = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000)
+    fromDate = new Date(today.getFullYear(), today.getMonth() - 1, 1)
     toDate = today
   }
 
@@ -162,6 +162,30 @@ export async function GET(request: Request) {
     },
   })
 
+  const investments = await prisma.transaction.aggregate({
+    _sum: {
+      amount: true,
+    },
+    _count: {
+      amount: true,
+    },
+    where: {
+      createdAt: {
+        gte: fromDate,
+        lte: toDate,
+      },
+      transactionType: "stoi",
+      // merchant: {
+      //   name: {
+      //     contains: "Nordnet"
+      //   }
+      // }
+      // amount: {
+      //   gt: 0,
+      // },
+    },
+  })
+
   return new Response(
     JSON.stringify({
       expenses: {
@@ -171,6 +195,10 @@ export async function GET(request: Request) {
       income: {
         totalIncome: totalIncome._sum.amount,
         transactionsCount: totalIncome._count.amount,
+      },
+      investments: {
+        totalInvested: investments._sum.amount,
+        transactionsCount: investments._count.amount,
       },
       firstInRange: firstInRange?.createdAt ?? null,
       lastInRange: lastInRange?.createdAt ?? null,
@@ -224,14 +252,18 @@ export async function POST(request: Request) {
         })
 
         // Skip if transaction already exists
-        if (
-          existingTransaction?.merchantId === null &&
-          existingTransaction?.senderId === null
-        ) {
-          await updateTransactionsCallback(transaction, existingTransaction)
-        } else {
+        if (existingTransaction?.id) {
           continue
         }
+        
+        // if (
+        //   existingTransaction?.merchantId === null &&
+        //   existingTransaction?.senderId === null
+        // ) {
+        //   await updateTransactionsCallback(transaction, existingTransaction)
+        // } else {
+        //   continue
+        // }
 
         // Check if merchant exists by unique key (e.g., id + name)
         if (

@@ -6,12 +6,11 @@ import useSWR from "swr"
 import { TransactionsSummary } from "./transactionsSumarry"
 import { TransactionsCategory } from "./transactions-category"
 import { DateRangeSelector } from "./date-range-selector"
-import type { TransactionRange } from '@/app/api/transactions/general/route'
+import { transactionsGeneralAPI, type TransactionRange } from '@/app/api/transactions/general/route'
 import { UploadButton } from './uploadButton'
 import UncategorizedTransactions from "./uncategoriezed-transactions"
-import { Circle } from "lucide-react"
 
-interface TransactionsSummaryResponse {
+export interface TransactionsSummaryResponse {
   expenses: {
     totalExpenses: number | null;
     transactionsCount: number;
@@ -20,6 +19,10 @@ interface TransactionsSummaryResponse {
     totalIncome: number | null;
     transactionsCount: number;
   };
+   investments: {
+      totalInvested: number | null;
+      transactionsCount: number;
+    }
 }
 
 export interface TransactionCategory {
@@ -36,9 +39,9 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export function TransactionsDashboard() {
   const today = new Date()
-  const [selectedPeriod, setSelectedPeriod] = useState("30days")
+  const [selectedPeriod, setSelectedPeriod] = useState("1month")
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
-    from: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000), // May 1, 2023
+    from: new Date(today.getFullYear(), today.getMonth() - 1, 1),
     to: today,
   })
 
@@ -47,7 +50,7 @@ export function TransactionsDashboard() {
   const { data: stats, isLoading: statsIsLoading, isValidating } = useSWR<TransactionsSummaryResponse>(`/api/transactions${urlQuery}`, fetcher)
 
     // const { trigger, isMutating } = useSWRMutation('/api/transactions', uploadTransactions)
-  const {data: dataRange} = useSWR<TransactionRange>(`/api/transactions/general`, fetcher)
+  const {data: dataRange} = useSWR<TransactionRange>(transactionsGeneralAPI, fetcher)
 
   // Calculate income and expenses separately
   const totalExpenses = stats?.expenses?.totalExpenses ?? 0
@@ -55,25 +58,26 @@ export function TransactionsDashboard() {
   // Helper function to set predefined date ranges
   const setPredefinedRange = useCallback((period: string) => {
     const today = new Date()
+    console.log('today.getDate(): ', today.getDate());
     const ranges = {
-      "7days": {
-        from: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000),
+      "current": {
+        from: new Date(today.getFullYear(), today.getMonth(), 1),
         to: today,
       },
-      "30days": {
-        from: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000),
+      "1month": {
+        from: new Date(today.getFullYear(), today.getMonth() - 1, 1),
         to: today,
       },
       "3months": {
-        from: new Date(today.getTime() - 90 * 24 * 60 * 60 * 1000),
+        from: new Date(today.getFullYear(), today.getMonth() - 3, 1),
         to: today,
       },
       "6months": {
-        from: new Date(today.getTime() - 180 * 24 * 60 * 60 * 1000),
+        from: new Date(today.getFullYear(), today.getMonth() - 6, 1),
         to: today,
       },
       "1year": {
-        from: new Date(today.getTime() - 365 * 24 * 60 * 60 * 1000),
+        from: new Date(today.getFullYear() - 1, today.getMonth(), 1),
         to: today,
       },
       all: {
@@ -132,9 +136,9 @@ export function TransactionsDashboard() {
           <TransactionsSummary
             stats={stats ?? {
               expenses: { totalExpenses: 0, transactionsCount: 0 },
-              income: { totalIncome: 0, transactionsCount: 0 }
+              income: { totalIncome: 0, transactionsCount: 0 },
+              investments: {totalInvested: 0, transactionsCount: 0}
             }}
-            // isStale={statsIsLoading && isValidating && stats !== undefined}
             isStale={statsIsLoading || isValidating && stats === undefined}
           />
 

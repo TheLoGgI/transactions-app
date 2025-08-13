@@ -5,6 +5,14 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+    experimental: {
+    turbo: {
+      resolveAlias: {
+        "isomorphic-form-data": "./form-data-mock.js",
+      },
+    },
+  },
+};
 
 export default config;

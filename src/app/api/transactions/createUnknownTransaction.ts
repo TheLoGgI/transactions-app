@@ -2,10 +2,22 @@ import type { Transaction, TransactionData } from './route'
 import { AgentType, PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
+// Simple hash function to generate deterministic ID from string
+const generateMerchantId = (text: string): string => {
+  let hash = 0;
+  for (let i = 0; i < text.length; i++) {
+    const char = text.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return Math.abs(hash).toString();
+}
+
 export const createUnknownTransactions = async (
   transaction: Transaction,
 ): Promise<TransactionData|null> => {
 
+  console.log('transaction: ', transaction);
   switch (transaction.transactionType) {
     
     case 'mppb':  //   MobilePay - Person to Business
@@ -45,14 +57,17 @@ export const createUnknownTransactions = async (
       transactionType: transaction.transactionType,
     }
 
-    case 'btlq':
+    case 'stof': // Standing order from (e.g., "Penge til bil")
+    case 'stoi': // Standing orders/internal transfers (e.g., "Nordnet Portefølje", "Køkken penge til Emil")
+    case 'btlq': // Bank transfers/automatic payments (e.g., "VILH. KIERS KOLLEGIUM", "HK,HANDELS- OG KONTORF. FORBUND", "CALL ME")
       const btlqMerchantName = transaction.transactionText
-      merchant = await prisma.merchant.upsert({
+      const merchantId = generateMerchantId(btlqMerchantName)
+      const unknownMerchant = await prisma.merchant.upsert({
         where: {
-          merchantId: transaction.cardDetails?.merchant.id ?? '',
+          merchantId: merchantId
         },
         create: {
-          merchantId: transaction.cardDetails?.merchant.id ?? '',
+          merchantId: merchantId,
           name: btlqMerchantName,
           categoryCode: transaction.cardDetails?.merchant.categoryCode ?? '',
           city: transaction.cardDetails?.merchant.city ?? '',
@@ -67,11 +82,14 @@ export const createUnknownTransactions = async (
       })
 
 
+      console.log('unknownMerchant: ', unknownMerchant);
+
+
     return {
       transactionKey: transaction.transactionCombinedKey,
       createdAt: new Date(transaction.originalDate),
       amount: transaction.transactionAmount.amount.decimalValue,
-      merchantId: merchant?.id,
+      merchantId: unknownMerchant?.id,
       subcategoryId: null,
       currencyCode: transaction.transactionAmount.currencyCode,
       agent: AgentType.RECEIVER,

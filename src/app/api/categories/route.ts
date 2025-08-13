@@ -34,18 +34,83 @@ export async function GET(request: Request) {
 //   });
 // }
 
-// export async function POST(request: Request) {
-//   // Parse the request body
-//   const body = await request.json() as  { code: string; name: string; color: string };
-//   const { name, color, code } = body;
+export async function POST(request: Request) {
+  // Parse the request body
+  const body = await request.json() as  { categoryName: string; categoryColor: string, categoryId?: string };
+  const { categoryName, categoryColor, categoryId } = body;
 
-//   // e.g. Insert new category into your DB
-//   const newCategory = await prisma.categories.create({
-//     data: { name, color, code }
-//   });
 
-//   return new Response(JSON.stringify(newCategory), {
-//     status: 201,
-//     headers: { 'Content-Type': 'application/json' }
-//   });
-// }
+  if (categoryId) {
+    const checkId = await prisma.categories.findFirstOrThrow({
+      where: {
+        id: Number(categoryId)
+      }
+    })
+
+    await prisma.categories.update({
+      where: {
+        id: Number(categoryId)
+      },
+      data: {
+        color: categoryColor,
+        name: categoryName
+      }
+    })
+
+  return new Response(JSON.stringify(checkId), {
+    status: 201,
+    headers: { 'Content-Type': 'application/json' }
+  });
+
+  }
+
+
+  // e.g. Insert new category into your DB
+  const newCategory = await prisma.categories.upsert({
+    where: { name: categoryName },
+    update: { color: categoryColor },
+    create: {
+      color: categoryColor,
+      name: categoryName
+    }
+  });
+
+  return new Response(JSON.stringify(newCategory), {
+    status: 201,
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
+
+export async function DELETE(request: Request) {
+  try {
+    // Parse the request body
+    const body = await request.json() as { categoryName: string };
+
+    // Delete the category
+    const deletedCategory = await prisma.categories.delete({
+      where: { name: body.categoryName },
+    });
+
+    console.log('deletedCategory: ', deletedCategory);
+
+    return new Response(JSON.stringify(deletedCategory), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  } catch (error) {
+    console.error('Error deleting category:', error);
+    
+    // Handle case where category doesn't exist
+    if (error instanceof Error && error.message.includes('Record to delete does not exist')) {
+      return new Response(JSON.stringify({ error: 'Category not found' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    return new Response(JSON.stringify({ error: 'Failed to delete category' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+}

@@ -2,26 +2,19 @@
 
 import { Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
+import type { TransactionsSummaryResponse } from "./transactions-dashboard";
 
-interface TransactionsSummaryResponse {
-  stats: {
-    expenses: {
-      totalExpenses: number | null;
-      transactionsCount: number;
-    };
-    income: {
-      totalIncome: number | null;
-      transactionsCount: number;
-    };
-  };
+interface TransactionsSummaryStats {
+  stats: TransactionsSummaryResponse;
   isStale: boolean
 }
 
 
-export function TransactionsSummary({stats, isStale}: TransactionsSummaryResponse) {
+export function TransactionsSummary({stats, isStale}: TransactionsSummaryStats) {
 
  const totalIncome = stats?.income.totalIncome ?? 0
  const totalExpenses = stats?.expenses.totalExpenses ?? 0
+ const totalInvested = Math.abs(stats?.investments.totalInvested ?? 0)
   
     return (
       <div className="relative">
@@ -74,6 +67,23 @@ export function TransactionsSummary({stats, isStale}: TransactionsSummaryRespons
               <p className="text-xs text-muted-foreground">
                 {totalIncome + totalExpenses >= 0 ? "Overskud" : "Underskud"}
                 {totalIncome > 0 && ` (${(((totalIncome + totalExpenses) / totalIncome) * 100).toFixed(1)}% af indkomst)`}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">Investering</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div
+                className={`text-2xl font-bold`}
+              >
+                {(totalInvested).toLocaleString("da-DK", { style: "currency", currency: "DKK" })}
+
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {/* {totalIncome + totalExpenses >= 0 ? "Overskud" : "Underskud"} */}
+                {`(${((totalInvested / totalIncome) * 100).toFixed(1)}% af indkomst)`}
               </p>
             </CardContent>
           </Card>

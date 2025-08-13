@@ -6,6 +6,8 @@ export interface TransactionRange {
     lastInRange: Date | null;
 }
 
+export const transactionsGeneralAPI = `/api/transactions/general`
+
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -17,7 +19,7 @@ export async function GET(request: Request) {
 
   if (!fromDate || !toDate) {
     const today = new Date();
-    fromDate = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+    fromDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
     toDate = today;
   }
 
