@@ -17,10 +17,11 @@ export async function GET(request: Request) {
   let fromDate = paramFrom ? new Date(paramFrom) : null;
   let toDate = paramTo ? new Date(paramTo) : null;
 
+  // Todo: get daysInMonth to work on server side
   if (!fromDate || !toDate) {
     const today = new Date();
     fromDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-    toDate = today;
+    toDate = new Date(today.getFullYear(), today.getMonth(), 0);
   }
 
   const firstInRange = await prisma.transaction.findFirst({

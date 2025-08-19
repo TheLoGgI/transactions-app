@@ -6,7 +6,6 @@ import subCategoriesData from './seeddata/sub-categories.json'
 const prisma = new PrismaClient()
 async function main() {
 
-  // console.log('categoriesData: ', categoriesData);
   // Categories
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   const categoriesRes = await prisma.categories.createMany({

@@ -14,15 +14,31 @@ interface TransactionsCategoryProps {
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
+// Calculate category percentage of total expenses
+const calculateCategoryPercentage = (categoryTotal: number, totalExpenses: number): number => {
+    const absoluteExpenses = Math.abs(totalExpenses || 0)
+    return Number((absoluteExpenses > 0 ? (categoryTotal / absoluteExpenses) * 100 : 0).toFixed(2))
+}
+
 export const TransactionsCategory = ({ totalExpenses, query }: TransactionsCategoryProps) => {
     const { data: categories, isLoading, isValidating } = useSWR<TransactionCategory[]>(`/api/transactions/category${query}`, fetcher)
-    // console.log('categories: ', categories);
 
-    const chartData = useMemo(() => categories?.map((category) => ({
+    const mappedCategoryData = useMemo(() => categories?.map(item => {
+        const categoryTotal = item.category.totalExpenses
+        const percentage = calculateCategoryPercentage(categoryTotal, totalExpenses)
+        return ({
+            ...item,
+            categoryTotal,
+            percentage,
+        })
+    }), [categories, totalExpenses])
+
+    const chartData = useMemo(() => mappedCategoryData?.map((category) => ({
         name: category.name,
-        value: category.category.totalExpenses || 0,
+        value: category.percentage,
         color: category.color,
-    })), [categories]);
+
+    })), [mappedCategoryData]);
 
     return (
         <div className="grid gap-6 md:grid-cols-2">
@@ -65,11 +81,10 @@ export const TransactionsCategory = ({ totalExpenses, query }: TransactionsCateg
                         </div>
                     ) :
                         (<div className="space-y-4">
-                            {categories
+                            {mappedCategoryData
                                 ?.map((category) => {
-                                    const categoryTotal = category.category.totalExpenses
-                                    const absouluteExpenses = Math.abs(totalExpenses || 0)
-                                    const percentage = absouluteExpenses > 0 ? (categoryTotal / absouluteExpenses) * 100 : 0
+                                    // const categoryTotal = category.category.totalExpenses
+                                    // const percentage = calculateCategoryPercentage(categoryTotal, totalExpenses)
 
                                     return (
                                         <div key={category.id} className="flex items-center justify-between">
@@ -78,8 +93,8 @@ export const TransactionsCategory = ({ totalExpenses, query }: TransactionsCateg
                                                 <span>{category.name}</span>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-sm font-medium">{categoryTotal.toLocaleString("da-DK", { style: "currency", currency: "DKK" })}</span>
-                                                <span className="text-xs text-muted-foreground">{percentage.toFixed(1)}%</span>
+                                                <span className="text-sm font-medium">{category.categoryTotal.toLocaleString("da-DK", { style: "currency", currency: "DKK" })}</span>
+                                                <span className="text-xs text-muted-foreground">{category.percentage.toFixed(1)}%</span>
                                             </div>
                                         </div>
                                     )

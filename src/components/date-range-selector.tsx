@@ -18,10 +18,10 @@ export const DateRangeSelector = ({selectedPeriod, onChange}: DateRangeProps) =>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="current">Indeværende Månede</SelectItem>
-                <SelectItem value="1month">Sidste månede</SelectItem>
-                <SelectItem value="3months">Sidste 3 måneder</SelectItem>
-                <SelectItem value="6months">Sidste 6 måneder</SelectItem>
-                <SelectItem value="1year">Sidste 12 måneder</SelectItem>
+                <SelectItem value="lastMonth">Sidste månede</SelectItem>
+                <SelectItem value="last3months">Sidste 3 måneder</SelectItem>
+                <SelectItem value="last6months">Sidste 6 måneder</SelectItem>
+                <SelectItem value="last12month">Sidste 12 måneder</SelectItem>
                 <SelectItem value="all">Altid</SelectItem>
                 {/* <SelectItem value="custom">Custom range</SelectItem> */}
               </SelectContent>

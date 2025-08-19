@@ -28,13 +28,13 @@ export function TransactionPieChart({ data }: TransactionPieChartProps) {
           dataKey="value"
           nameKey="name"
           scale=""
-          // label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+          // label={({ name, value }) => `${name}: ${value}%`}
         >
           {filteredData.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={entry.color} />
           ))}
         </Pie>
-        <Tooltip />
+        <Tooltip formatter={(value: number, name,) => [`${value}%`, name]} />
         {/* <Legend /> */}
       </PieChart>
     </ResponsiveContainer>

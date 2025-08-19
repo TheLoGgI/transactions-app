@@ -17,46 +17,47 @@ export const createUnknownTransactions = async (
   transaction: Transaction,
 ): Promise<TransactionData|null> => {
 
-  console.log('transaction: ', transaction);
   switch (transaction.transactionType) {
+    
+    // case 'mppb':  //   MobilePay - Person to Business
+    // case 'mpcp':  //   MobilePay - Person to Person
+    //   let merchant = null
+    //   const mpcpMerchantName = transaction.transactionText
+    //     .split(/mobilepay/gi)
+    //     .join('')
+    //     .trim()
+    //   merchant = await prisma.merchant.findFirst({
+    //     where: {
+    //       name: mpcpMerchantName,
+    //     },
+    //   })
+
+    //   if (merchant?.id === null) {
+    //     merchant = await prisma.merchant.create({
+    //       data: {
+    //         merchantId: transaction.cardDetails?.merchant.id ?? '',
+    //         name: mpcpMerchantName,
+    //         categoryCode: transaction.cardDetails?.merchant.categoryCode ?? '',
+    //         city: transaction.cardDetails?.merchant.city ?? '',
+    //         country: transaction.cardDetails?.merchant.country ?? '',
+    //       },
+    //     })
+    //   }
+
+    //   return {
+    //   transactionKey: transaction.transactionCombinedKey,
+    //   createdAt: new Date(transaction.originalDate),
+    //   amount: transaction.transactionAmount.amount.decimalValue,
+    //   merchantId: merchant?.id,
+    //   subcategoryId: null,
+    //   currencyCode: transaction.transactionAmount.currencyCode,
+    //   agent: AgentType.RECEIVER,
+    //   senderId: null,
+    //   transactionType: transaction.transactionType,
+    // }
     
     case 'mppb':  //   MobilePay - Person to Business
     case 'mpcp':  //   MobilePay - Person to Person
-      let merchant = null
-      const mpcpMerchantName = transaction.transactionText
-        .split(/mobilepay/gi)
-        .join('')
-        .trim()
-      merchant = await prisma.merchant.findFirst({
-        where: {
-          name: mpcpMerchantName,
-        },
-      })
-
-      if (merchant?.id === null) {
-        merchant = await prisma.merchant.create({
-          data: {
-            merchantId: transaction.cardDetails?.merchant.id ?? '',
-            name: mpcpMerchantName,
-            categoryCode: transaction.cardDetails?.merchant.categoryCode ?? '',
-            city: transaction.cardDetails?.merchant.city ?? '',
-            country: transaction.cardDetails?.merchant.country ?? '',
-          },
-        })
-      }
-
-      return {
-      transactionKey: transaction.transactionCombinedKey,
-      createdAt: new Date(transaction.originalDate),
-      amount: transaction.transactionAmount.amount.decimalValue,
-      merchantId: merchant?.id,
-      subcategoryId: null,
-      currencyCode: transaction.transactionAmount.currencyCode,
-      agent: AgentType.RECEIVER,
-      senderId: null,
-      transactionType: transaction.transactionType,
-    }
-
     case 'stof': // Standing order from (e.g., "Penge til bil")
     case 'stoi': // Standing orders/internal transfers (e.g., "Nordnet Portefølje", "Køkken penge til Emil")
     case 'btlq': // Bank transfers/automatic payments (e.g., "VILH. KIERS KOLLEGIUM", "HK,HANDELS- OG KONTORF. FORBUND", "CALL ME")
@@ -69,19 +70,55 @@ export const createUnknownTransactions = async (
         create: {
           merchantId: merchantId,
           name: btlqMerchantName,
-          categoryCode: transaction.cardDetails?.merchant.categoryCode ?? '',
+          categoryCode: transaction.cardDetails?.merchant.categoryCode ?? merchantId,
           city: transaction.cardDetails?.merchant.city ?? '',
           country: transaction.cardDetails?.merchant.country ?? '',
         },
         update: {
           name: btlqMerchantName,
-          categoryCode: transaction.cardDetails?.merchant.categoryCode ?? '',
+          categoryCode: transaction.cardDetails?.merchant.categoryCode ?? merchantId,
           city: transaction.cardDetails?.merchant.city ?? '',
           country: transaction.cardDetails?.merchant.country ?? '',
-        }
+        },
+        // select: {
+        //   id: true,
+        //   name: true,
+        //   categoryCode: true,
+        //   merchantId: true
+        // }
       })
 
 
+      let subCategorie = await prisma.subCategories.findFirst({
+        where: {
+          OR: [
+            {
+              code: unknownMerchant.categoryCode
+            },
+            {
+            code: unknownMerchant.id
+          }
+          ]
+        },
+        select: {
+          id: true
+        }
+      })
+
+      if (subCategorie == null) {
+        const unknownSubcategory = await prisma.subCategories.create({
+          data: {
+            name: unknownMerchant.name,
+            code: unknownMerchant.merchantId,
+            description: "Custom"
+          }
+        })
+
+        subCategorie = unknownSubcategory
+      }
+      
+      
+      console.log('subCategorie: ', subCategorie);
       console.log('unknownMerchant: ', unknownMerchant);
 
 
@@ -90,7 +127,7 @@ export const createUnknownTransactions = async (
       createdAt: new Date(transaction.originalDate),
       amount: transaction.transactionAmount.amount.decimalValue,
       merchantId: unknownMerchant?.id,
-      subcategoryId: null,
+      subcategoryId: subCategorie?.id,
       currencyCode: transaction.transactionAmount.currencyCode,
       agent: AgentType.RECEIVER,
       senderId: null,

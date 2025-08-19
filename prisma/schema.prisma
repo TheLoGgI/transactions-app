@@ -14,7 +14,7 @@ model Transaction {
     id              String         @id @default(uuid())
     transactionKey  String         @unique
     merchantId      String?
-    merchant        Merchant?      @relation(fields: [merchantId], references: [id])
+    merchant        Merchant?      @relation(fields: [merchantId], references: [id], onDelete: Cascade)
     Sender          Sender?        @relation(fields: [senderId], references: [id])
     senderId        String?
     agent           AgentType
@@ -23,6 +23,8 @@ model Transaction {
     currencyCode    String
     subcategoryId   Int?
     subcategory     SubCategories? @relation(fields: [subcategoryId], references: [id])
+    categoryId Int?
+    category Categories? @relation(fields: [categoryId], references: [id]) 
     createdAt       DateTime       @default(now())
     updatedAt       DateTime       @updatedAt
 
@@ -37,6 +39,7 @@ model Categories {
     createdAt     DateTime        @default(now())
     updatedAt     DateTime        @updatedAt
     SubCategories SubCategories[]
+    transactions  Transaction[] 
 
     @@index([name])
     @@map("categories")

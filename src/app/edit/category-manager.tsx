@@ -125,7 +125,6 @@ export function CategoryManager({ categoriesData }: CategoryManagerProps) {
 
 
   const handleEditCategory = (category: Category) => {
-    console.log('category: ', category);
     setEditingCategory(category)
     // setNewCategoryName(category.name)
     setNewCategoryColor(category.color)

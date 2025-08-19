@@ -23,18 +23,29 @@ interface Subcategory {
   categoryId: number | null;
 }
 
+interface Sender {
+  id: string;
+  name: string;
+  city: string | null;
+  country: string | null;
+  key: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface UncategorizedTransaction {
     id: string;
     amount: number;
     createdAt: string;
     currencyCode: string;
-    merchant: {
+    merchant?: {
         id: string;
         name: string;
         categoryCode: string;
         merchantId: string;
         city: string;
     };
+    sender: Sender;
     merchantId: string;
     senderId: string | null;
     subcategoryId: string | null;
@@ -69,7 +80,7 @@ const updateCategory = async (
 const UncategorizedTransactions = () => {
       const { data: categories, isLoading: categoriesIsLoading } = useSWR<Category[]>(`/api/categories`, fetcher)
   const { data: uncategorizedTransactions, isLoading: uncategorizedIsLoading, isValidating } = useSWR<UncategorizedTransaction[]>(`/api/categories/uncategorized`, fetcher)
-const { trigger: categorizeTransaction, isMutating } = useSWRMutation(`/api/categories/uncategorized`, updateCategory)
+  const { trigger: categorizeTransaction, isMutating } = useSWRMutation(`/api/categories/uncategorized`, updateCategory)
 
 
   if (uncategorizedIsLoading || isValidating && uncategorizedTransactions === undefined)  {
@@ -104,12 +115,15 @@ const { trigger: categorizeTransaction, isMutating } = useSWRMutation(`/api/cate
                                 {(uncategorizedTransactions ?? []).map((transaction) => (
                                     <TableRow key={transaction.id}>
                                         <TableCell className="font-medium">{new Date(transaction.createdAt).toLocaleDateString("da-DK", {dateStyle: "long"})}</TableCell>
-                                        <TableCell>{transaction.merchant.name}</TableCell>
+                                        <TableCell>{transaction?.merchant?.name ?? transaction?.sender?.name}</TableCell>
                                         <TableCell className="text-right">{transaction.amount.toLocaleString("da-DK", { style: "currency", currency: "DKK" })}</TableCell>
                                         <TableCell>
+                                            {transaction?.subcategory?.name &&
                                             <Badge variant="outline" className="bg-gray-100">
                                                 {transaction.subcategory.name}
                                             </Badge>
+
+                                            }
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <DropdownMenu>

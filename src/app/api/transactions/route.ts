@@ -80,6 +80,8 @@ export interface TransactionJSON {
   transactionList: Transaction[]
 }
 
+export const transactionsApi = (query: string) => `/api/transactions${query}`
+
 export async function GET(request: Request) {
   const url = new URL(request.url)
   const paramFrom = url.searchParams.get('from')
@@ -87,11 +89,11 @@ export async function GET(request: Request) {
 
   let fromDate = paramFrom ? new Date(paramFrom) : null
   let toDate = paramTo ? new Date(paramTo) : null
-
+  
   if (!fromDate || !toDate) {
     const today = new Date()
     fromDate = new Date(today.getFullYear(), today.getMonth() - 1, 1)
-    toDate = today
+    toDate = new Date(today.getFullYear(), today.getMonth(), 0)
   }
 
   const firstInRange = await prisma.transaction.findFirst({
@@ -174,12 +176,12 @@ export async function GET(request: Request) {
         gte: fromDate,
         lte: toDate,
       },
-      transactionType: "stoi",
-      // merchant: {
-      //   name: {
-      //     contains: "Nordnet"
-      //   }
-      // }
+      // transactionType: "stoi",
+      merchant: {
+        name: {
+          contains: "Nordnet"
+        }
+      }
       // amount: {
       //   gt: 0,
       // },
