@@ -60,10 +60,14 @@ function Calendar({
         ...classNames,
       }}
       components={{
+        // @ts-expect-error typeerros
         IconLeft: ({ className, ...props }) => (
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           <ChevronLeft className={cn("size-4", className)} {...props} />
         ),
+        // @ts-expect-error typeerros
         IconRight: ({ className, ...props }) => (
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           <ChevronRight className={cn("size-4", className)} {...props} />
         ),
       }}

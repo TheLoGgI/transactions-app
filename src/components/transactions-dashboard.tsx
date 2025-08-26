@@ -1,15 +1,14 @@
 "use client"
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react"
+import { Suspense, useCallback, useMemo, useState } from "react"
 
 import useSWR from "swr"
 import { TransactionsSummary } from "./transactionsSumarry"
 import { TransactionsCategory } from "./transactions-category"
 import { DateRangeSelector } from "./date-range-selector"
-import { transactionsGeneralAPI, type TransactionRange } from '@/app/api/transactions/general/route'
+import {  type TransactionRange } from '@/app/api/transactions/general/route'
 import { UploadButton } from './uploadButton'
 import UncategorizedTransactions from "./uncategoriezed-transactions"
-import { transactionsApi } from "@/app/api/transactions/route"
 import { CategoryExpensesOverview } from "./category-expenses-overview"
 
 export interface TransactionsSummaryResponse {
@@ -59,10 +58,10 @@ export function TransactionsDashboard() {
     if (!dateRange) return "";
     return `?from=${dateRange.from.toISOString()}&to=${(dateRange.to ?? dateRange.from).toISOString()}`;
   }, [dateRange]);
-  const { data: stats, isLoading: statsIsLoading, isValidating } = useSWR<TransactionsSummaryResponse>(transactionsApi(urlQuery), fetcher)
+  const { data: stats, isLoading: statsIsLoading, isValidating } = useSWR<TransactionsSummaryResponse>(`/api/transactions${urlQuery}`, fetcher)
 
   // const { trigger, isMutating } = useSWRMutation('/api/transactions', uploadTransactions)
-  const { data: dataRange } = useSWR<TransactionRange>(transactionsGeneralAPI, fetcher)
+  const { data: dataRange } = useSWR<TransactionRange>('/api/transactions/general', fetcher)
 
   // Calculate income and expenses separately
   const totalExpenses = stats?.expenses?.totalExpenses ?? 0

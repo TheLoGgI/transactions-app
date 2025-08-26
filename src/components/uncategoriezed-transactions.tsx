@@ -78,9 +78,9 @@ const updateCategory = async (
 
 
 const UncategorizedTransactions = () => {
-      const { data: categories, isLoading: categoriesIsLoading } = useSWR<Category[]>(`/api/categories`, fetcher)
+      const { data: categories } = useSWR<Category[]>(`/api/categories`, fetcher)
   const { data: uncategorizedTransactions, isLoading: uncategorizedIsLoading, isValidating } = useSWR<UncategorizedTransaction[]>(`/api/categories/uncategorized`, fetcher)
-  const { trigger: categorizeTransaction, isMutating } = useSWRMutation(`/api/categories/uncategorized`, updateCategory)
+  const { trigger: categorizeTransaction } = useSWRMutation(`/api/categories/uncategorized`, updateCategory)
 
 
   if (uncategorizedIsLoading || isValidating && uncategorizedTransactions === undefined)  {

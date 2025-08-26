@@ -1,5 +1,4 @@
 import { PrismaClient, AgentType } from '@prisma/client'
-import { updateTransactionsCallback } from './update-callback'
 import { createUnknownTransactions } from './createUnknownTransaction'
 const prisma = new PrismaClient()
 
@@ -79,8 +78,6 @@ export interface TransactionData {
 export interface TransactionJSON {
   transactionList: Transaction[]
 }
-
-export const transactionsApi = (query: string) => `/api/transactions${query}`
 
 export async function GET(request: Request) {
   const url = new URL(request.url)

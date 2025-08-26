@@ -26,7 +26,7 @@ interface SpendingSection {
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export function YearlySpendingOverview() {
-      const { data: overview, isLoading } = useSWR<unknown>(`/api/transactions/overview`, fetcher)
+      const { data: overview } = useSWR<unknown>(`/api/transactions/overview`, fetcher)
       console.log('overview: ', overview);
     
     const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]

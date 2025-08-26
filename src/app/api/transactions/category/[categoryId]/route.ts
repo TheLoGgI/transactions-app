@@ -1,11 +1,14 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-export async function GET(request: Request, { params }: { params: { categoryId: string } }) {
+type GetRequestType = { params: Promise<{ categoryId: string }> }
+
+export async function GET(request: Request, { params }: GetRequestType) {
+  const resolvedParams = await params;
   const url = new URL(request.url);
   const paramFrom = url.searchParams.get("from");
   const paramTo = url.searchParams.get("to");
-  const categoryId = parseInt(params.categoryId);
+  const categoryId = parseInt(resolvedParams.categoryId);
 
   let fromDate = paramFrom ? new Date(paramFrom) : null;
   let toDate = paramTo ? new Date(paramTo) : null;

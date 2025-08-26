@@ -66,7 +66,7 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
 
   // Fetch categories for dropdown
-  const { data: categories, isLoading: categoriesLoading } = useSWR<Category[]>(
+  const { data: categories } = useSWR<Category[]>(
     "/api/categories",
     fetcher
   );

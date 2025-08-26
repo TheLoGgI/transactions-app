@@ -6,9 +6,6 @@ export interface TransactionRange {
     lastInRange: Date | null;
 }
 
-export const transactionsGeneralAPI = `/api/transactions/general`
-
-
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const paramFrom = url.searchParams.get("from");

@@ -91,8 +91,8 @@ export function CategoryManager({ categoriesData }: CategoryManagerProps) {
   const [newCategoryColor, setNewCategoryColor] = useState(predefinedColors[0])
   // const [newCategoryType, setNewCategoryType] = useState<"income" | "expense">("expense")
   //   const { toast } = useToast()
-    const { trigger, isMutating } = useSWRMutation('/api/categories', handleCategories)  
-    const { trigger: deleteCategory, isMutating: isMutationgDelete } = useSWRMutation('/api/categories', deleteCategoryMutation)  
+    const { trigger } = useSWRMutation('/api/categories', handleCategories)  
+    const { trigger: deleteCategory } = useSWRMutation('/api/categories', deleteCategoryMutation)  
 
   const handleMutateCategories = async (formData: FormData) => {
     const name = formData.get('category-name') as string | null
