@@ -2,41 +2,38 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 export async function GET() {
-  const uncategorized = await prisma.transaction.findMany({
-    where: {
-      // NOT: {
-      amount: {
-        lt: 0,
-      },
-      AND: [
-        {
-          subcategory: {
-            category: null
-          },
-        },
-        {
+  const whereCondition = {
+    amount: {
+      lt: 0,
+    },
+    AND: [
+      {
+        subcategory: {
           category: null,
         },
-      ],
-      // }
-      // OR: [
-      //   {
-      //     subcategory: {
-      //       category: null,
-      //     },
-      //   },
-      //   {
-      //     category: null,
-      //   },
-      // ],
-    },
-    include: {
-      merchant: true,
-      subcategory: true,
-      Sender: true,
-    },
-    take: 20,
-  })
+      },
+      {
+        category: null,
+      },
+    ],
+  }
+
+  // Get total count and transactions in parallel for better performance
+  const [totalCount, uncategorized] = await Promise.all([
+    prisma.transaction.count({
+      where: whereCondition,
+    }),
+    prisma.transaction.findMany({
+      where: whereCondition,
+      include: {
+        merchant: true,
+        subcategory: true,
+        Sender: true,
+      },
+      take: 20,
+    }),
+  ])
+  console.log('totalCount: ', totalCount)
 
   // Map the results to alias Sender to sender
   const mappedResults = uncategorized.map((transaction) => ({
@@ -45,10 +42,17 @@ export async function GET() {
     Sender: undefined, // Remove the original Sender field
   }))
 
-  return new Response(JSON.stringify(mappedResults), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' },
-  })
+  return new Response(
+    JSON.stringify({
+      transactions: mappedResults,
+      totalCount,
+      displayedCount: mappedResults.length,
+    }),
+    {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    },
+  )
 }
 
 interface updateCategoriesBody {
@@ -77,13 +81,22 @@ export async function PUT(request: Request) {
     },
   })
 
-  console.log('updateSubcategory: ', updateSubcategory)
+  // Update all transactions with that subcategory, with the categoryId
+  await prisma.transaction.updateMany({
+    where: {
+      subcategoryId: uncategorizedSubcategori.subcategoryId,
+    },
+    data: {
+      categoryId: body.categoryId,
+    },
+  })
+
   if (
     uncategorizedSubcategori.subcategoryId !== null &&
     updateSubcategory == true
   ) {
-    console.log('Adding subcategory', uncategorizedSubcategori)
-    await prisma.subCategories.update({
+    // console.log('Adding subcategory', uncategorizedSubcategori)
+    await prisma.subCategories.updateMany({
       where: {
         id: uncategorizedSubcategori.subcategoryId,
       },

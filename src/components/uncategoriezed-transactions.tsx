@@ -77,11 +77,20 @@ const updateCategory = async (
 };
 
 
+interface UncategorizedResponse {
+  transactions: UncategorizedTransaction[]
+  totalCount: number
+  displayedCount: number
+}
+
 const UncategorizedTransactions = () => {
       const { data: categories } = useSWR<Category[]>(`/api/categories`, fetcher)
-  const { data: uncategorizedTransactions, isLoading: uncategorizedIsLoading, isValidating } = useSWR<UncategorizedTransaction[]>(`/api/categories/uncategorized`, fetcher)
+  const { data: uncategorizedData, isLoading: uncategorizedIsLoading, isValidating } = useSWR<UncategorizedResponse>(`/api/categories/uncategorized`, fetcher)
   const { trigger: categorizeTransaction } = useSWRMutation(`/api/categories/uncategorized`, updateCategory)
-
+  
+  const uncategorizedTransactions = uncategorizedData?.transactions ?? []
+  const totalCount = uncategorizedData?.totalCount ?? 0
+  
 
   if (uncategorizedIsLoading || isValidating && uncategorizedTransactions === undefined)  {
         return (<div className="flex items-center justify-center h-full w-full space-x-2">
@@ -97,7 +106,11 @@ const UncategorizedTransactions = () => {
                     <CardHeader>
                         <CardTitle>Ukategoriserede transaktioner</CardTitle>
                         <CardDescription>
-                            Tildel kategorier til disse transaktioner for at forbedre din forbrugsindsigt
+                            Tildel kategorier til disse transaktioner for at forbedre din forbrugsindsigt.
+                            <br />
+                            <span className="font-medium">
+                                Viser {uncategorizedTransactions.length} af {totalCount} ukategoriserede underkategorier
+                            </span>
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -107,7 +120,7 @@ const UncategorizedTransactions = () => {
                                     <TableHead>Dato</TableHead>
                                     <TableHead>Beskrivelse</TableHead>
                                     <TableHead className="text-right">Beløb</TableHead>
-                                    <TableHead>Sub Kategori</TableHead>
+                                    <TableHead>Underkategori</TableHead>
                                     <TableHead className="text-right">Handlinger</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -119,7 +132,7 @@ const UncategorizedTransactions = () => {
                                         <TableCell className="text-right">{transaction.amount.toLocaleString("da-DK", { style: "currency", currency: "DKK" })}</TableCell>
                                         <TableCell>
                                             {transaction?.subcategory?.name &&
-                                            <Badge variant="outline" className="bg-gray-100">
+                                            <Badge variant="outline" className="bg-gray-100 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600">
                                                 {transaction.subcategory.name}
                                             </Badge>
 

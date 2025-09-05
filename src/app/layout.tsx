@@ -1,3 +1,6 @@
+import { AppSidebar } from "@/components/menu-sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { ThemeProvider } from "@/components/theme-provider";
 import "@/styles/globals.css";
 
 import { type Metadata } from "next";
@@ -18,8 +21,15 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable}`}>
-      <body>{children}</body>
+    <html lang="en" className={geist.variable} suppressHydrationWarning>
+      <body>
+        <ThemeProvider>
+          <SidebarProvider>
+            <AppSidebar />
+            {children}
+          </SidebarProvider>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

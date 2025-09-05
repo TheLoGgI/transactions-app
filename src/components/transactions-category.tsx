@@ -5,7 +5,7 @@ import type { TransactionCategory } from "./transactions-dashboard";
 import useSWR from "swr";
 import { Edit2, Loader2 } from "lucide-react";
 import { useMemo } from "react";
-import Link from "next/link";
+import { SidebarTrigger } from "./ui/sidebar";
 
 interface TransactionsCategoryProps {
     totalExpenses: number;
@@ -68,9 +68,7 @@ export const TransactionsCategory = ({ totalExpenses, query }: TransactionsCateg
                     <CardTitle>Udgiftskategorier</CardTitle>
                     <CardDescription>Opdeling af forbrug pr. kategori</CardDescription>
                     <CardAction>
-                        <Link href="/edit" className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors duration-200 hover:bg-gray-200 hover:text-gray-700">
-                            <Edit2 className="w-4 h-4" />
-                        </Link>
+                        <SidebarTrigger className="w-8 h-8 rounded-lg transition-colors duration-200 hover:bg-gray-200 hover:text-gray-700" icon={ <Edit2 className="w-4 h-4" />} />
                     </CardAction>
                 </CardHeader>
                 <CardContent>
@@ -102,6 +100,7 @@ export const TransactionsCategory = ({ totalExpenses, query }: TransactionsCateg
                         </div>)}
                 </CardContent>
             </Card>
+            
         </div>
     );
 }

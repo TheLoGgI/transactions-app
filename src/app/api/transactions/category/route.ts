@@ -78,14 +78,11 @@ export async function GET(request: Request) {
       
       const categoryIdStr = String(transaction.subcategory?.categoryId ?? 0) ;
       const transactionsCategoryIdStr = String(transaction?.category?.id ?? 0) ;
-      
-      const existingCategory = combinedCategories.get(categoryIdStr) ?? combinedCategories.get(transactionsCategoryIdStr);
+      const categoryKey = categoryIdStr ?? transactionsCategoryIdStr
+      const existingCategory = combinedCategories.get(categoryKey)
       
       if (existingCategory) {
-
-        if (String(existingCategory.id) == '0') {
-          console.log("Uden kategori", transaction);
-        }
+        
         // console.log('existingCategory: ', existingCategory);
         existingCategory.category.totalExpenses += Math.abs(transaction.amount);
         existingCategory.category.transactionsCount += 1;
@@ -95,17 +92,31 @@ export async function GET(request: Request) {
         //   console.log('transaction: ', transaction);
         //   return 
         // }
-        // console.log('Unknown categoryIdStr: ', categoryIdStr, transaction);
 
-        combinedCategories.set(categoryIdStr, {
-          id: transaction.subcategory?.categoryId ?? 0,
-          name: transaction.subcategory?.category?.name ?? "Uden kategori",
-          color: transaction.subcategory?.category?.color ?? "#d1d5dc",
-          category: {
-            totalExpenses: Math.abs(transaction.amount),
-            transactionsCount: 1,
-          },
-        });
+        if (categoryIdStr == "0" && transaction.category?.id) {
+          const categoryTransactionKey = String(transaction.category?.id)
+          combinedCategories.set(categoryTransactionKey, {
+            id: transaction.category?.id ?? 0,
+            name: transaction.category?.name ?? "Uden kategori",
+            color: transaction.category?.color ?? "#d1d5dc",
+            category: {
+              totalExpenses: Math.abs(transaction.amount),
+              transactionsCount: 1,
+            },
+          });
+        } else {
+          combinedCategories.set(categoryIdStr, {
+            id: transaction.subcategory?.categoryId ?? 0,
+            name: transaction.subcategory?.category?.name ?? "Uden kategori",
+            color: transaction.subcategory?.category?.color ?? "#d1d5dc",
+            category: {
+              totalExpenses: Math.abs(transaction.amount),
+              transactionsCount: 1,
+            },
+          });
+
+        }
+
       }
   });
 

@@ -39,7 +39,8 @@ model Categories {
     createdAt     DateTime        @default(now())
     updatedAt     DateTime        @updatedAt
     SubCategories SubCategories[]
-    transactions  Transaction[] 
+    transactions  Transaction[]
+    budget        Budget?
 
     @@index([name])
     @@map("categories")
@@ -89,8 +90,31 @@ model Sender {
     @@map("sender")
 }
 
+model Budget {
+    id          Int         @id @default(autoincrement())
+    categoryId  Int         @unique
+    category    Categories  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+    amount      Float
+    period      BudgetPeriod @default(MONTHLY)
+    startDate   DateTime    @default(now())
+    endDate     DateTime?
+    isActive    Boolean     @default(true)
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+
+    @@index([categoryId])
+    @@map("budgets")
+}
+
 enum AgentType {
     SENDER
     RECEIVER
     UNKNOWN
+}
+
+enum BudgetPeriod {
+    WEEKLY
+    MONTHLY
+    QUARTERLY
+    YEARLY
 }

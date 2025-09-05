@@ -10,6 +10,10 @@ import {  type TransactionRange } from '@/app/api/transactions/general/route'
 import { UploadButton } from './uploadButton'
 import UncategorizedTransactions from "./uncategoriezed-transactions"
 import { CategoryExpensesOverview } from "./category-expenses-overview"
+import { IncomeExpensesChart } from "./income-expenses-chart"
+import { YearlySpendingOverview } from "./yearly-spending-overview"
+import { TrendingCategories } from "./trending-categories"
+import { TimelineVisualization } from "./timeline-visualization"
 
 export interface TransactionsSummaryResponse {
   expenses: {
@@ -66,6 +70,10 @@ export function TransactionsDashboard() {
   // Calculate income and expenses separately
   const totalExpenses = stats?.expenses?.totalExpenses ?? 0
 
+  // Simple date object creation - no need to memoize these lightweight operations
+  const totalStartDate = dataRange?.firstInRange ? new Date(dataRange.firstInRange) : null;
+  const totalEndDate = dataRange?.lastInRange ? new Date(dataRange.lastInRange) : null;
+
   // Helper function to set predefined date ranges
   const setPredefinedRange = useCallback((period: string) => {
     const today = new Date()
@@ -110,12 +118,14 @@ export function TransactionsDashboard() {
               View and categorize your transactions to better understand your spending habits.
             </p>
             <p className="text-muted-foreground">
-              {dataRange?.firstInRange && dataRange?.lastInRange
-                ? `Data available from ${new Date(dataRange.firstInRange).toLocaleDateString("da-DK", { dateStyle: "long" })} to ${new Date(dataRange.lastInRange).toLocaleDateString("da-DK", { dateStyle: "long" })}`
+              {totalStartDate && totalEndDate
+                ? `Data available from ${totalStartDate.toLocaleDateString("da-DK", { dateStyle: "long" })} to ${totalEndDate.toLocaleDateString("da-DK", { dateStyle: "long" })}`
                 : "No data available yet."}
             </p>
 
           </div>
+
+          
 
           {/* Controls */}
           <div>
@@ -133,13 +143,15 @@ export function TransactionsDashboard() {
 
         </header>
 
-        {/* <div className="w-full">
-          <svg className="w-full" height="50" viewBox="0 0 -1 50">
-            {new Array(50).fill(Math.random() > .5).map((item, index) => {
-              return <circle key={index} cx={`${20 * (index + 1)}`} cy="10" r="8" fill={item === true ? "black" : "none"} stroke={item === false ? "gray" : "none"}  stroke-width="2"  />
-            })}
-          </svg>
-        </div> */}
+        {/* Timeline Visualization */}
+        {totalStartDate && totalEndDate && (
+          <TimelineVisualization 
+            totalStart={totalStartDate}
+            totalEnd={totalEndDate}
+            selectedStart={dateRange.from}
+            selectedEnd={dateRange.to}
+          />
+        )}
 
         <TransactionsSummary
           stats={stats ?? {
@@ -148,7 +160,10 @@ export function TransactionsDashboard() {
             investments: { totalInvested: 0, transactionsCount: 0 }
           }}
           isStale={statsIsLoading || isValidating && stats === undefined}
+          dateRange={dateRange}
         />
+
+        
 
         {/* Main Content */}
         <Suspense fallback={<div>Loading summary...</div>}>
@@ -161,6 +176,17 @@ export function TransactionsDashboard() {
           <CategoryExpensesOverview query={urlQuery} />
         </Suspense>
 
+        <Suspense fallback={<div>Loading trending categories...</div>}>
+          <TrendingCategories query={urlQuery} />
+        </Suspense>
+
+        <Suspense fallback={<div>Loading income expenses chart...</div>}>
+          <IncomeExpensesChart query={urlQuery} />
+        </Suspense>
+
+        <Suspense fallback={<div>Loading overview...</div>}>
+          <YearlySpendingOverview />
+        </Suspense>
       </div>
     </div>
   )

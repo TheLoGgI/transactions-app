@@ -86,104 +86,96 @@ export async function GET(request: Request) {
 
   let fromDate = paramFrom ? new Date(paramFrom) : null
   let toDate = paramTo ? new Date(paramTo) : null
-  
+
   if (!fromDate || !toDate) {
     const today = new Date()
     fromDate = new Date(today.getFullYear(), today.getMonth() - 1, 1)
     toDate = new Date(today.getFullYear(), today.getMonth(), 0)
   }
 
-  const firstInRange = await prisma.transaction.findFirst({
-    where: {
-      createdAt: {
-        gte: fromDate,
-        lte: toDate,
-      },
-    },
-    select: {
-      createdAt: true,
-    },
-    orderBy: {
-      createdAt: 'asc',
-    },
-  })
 
-  const lastInRange = await prisma.transaction.findFirst({
-    where: {
-      createdAt: {
-        gte: fromDate,
-        lte: toDate,
-      },
-    },
-    select: {
-      createdAt: true,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  })
 
-  const totalExpenses = await prisma.transaction.aggregate({
-    _sum: {
-      amount: true,
-    },
-    _count: {
-      amount: true,
-    },
-    where: {
-      createdAt: {
-        gte: fromDate,
-        lte: toDate,
+  const [firstInRange, lastInRange, totalExpenses, totalIncome, investments] = await Promise.all([
+    prisma.transaction.findFirst({
+      where: {
+        createdAt: {
+          gte: fromDate,
+          lte: toDate,
+        },
       },
-      merchant: { isNot: null },
-      // amount: {
-      //   lt: 0,
-      // },
-    },
-  })
-
-  const totalIncome = await prisma.transaction.aggregate({
-    _sum: {
-      amount: true,
-    },
-    _count: {
-      amount: true,
-    },
-    where: {
-      createdAt: {
-        gte: fromDate,
-        lte: toDate,
+      select: {
+        createdAt: true,
       },
-      Sender: { isNot: null },
-      // amount: {
-      //   gt: 0,
-      // },
-    },
-  })
-
-  const investments = await prisma.transaction.aggregate({
-    _sum: {
-      amount: true,
-    },
-    _count: {
-      amount: true,
-    },
-    where: {
-      createdAt: {
-        gte: fromDate,
-        lte: toDate,
+      orderBy: {
+        createdAt: 'asc',
       },
-      // transactionType: "stoi",
-      merchant: {
-        name: {
-          contains: "Nordnet"
-        }
-      }
-      // amount: {
-      //   gt: 0,
-      // },
-    },
-  })
+    }),
+    prisma.transaction.findFirst({
+      where: {
+        createdAt: {
+          gte: fromDate,
+          lte: toDate,
+        },
+      },
+      select: {
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    }),
+    prisma.transaction.aggregate({
+      _sum: {
+        amount: true,
+      },
+      _count: {
+        amount: true,
+      },
+      where: {
+        createdAt: {
+          gte: fromDate,
+          lte: toDate,
+        },
+        merchant: { isNot: null },
+        // amount: {
+        //   lt: 0,
+        // },
+      },
+    }),
+    prisma.transaction.aggregate({
+      _sum: {
+        amount: true,
+      },
+      _count: {
+        amount: true,
+      },
+      where: {
+        createdAt: {
+          gte: fromDate,
+          lte: toDate,
+        },
+        Sender: { isNot: null },
+        // amount: {
+        //   gt: 0,
+        // },
+      },
+    }),
+    prisma.transaction.aggregate({
+      _sum: {
+        amount: true,
+      },
+      _count: {
+        amount: true,
+      },
+      where: {
+        createdAt: {
+          gte: fromDate,
+          lte: toDate,
+        },
+        categoryId: 14
+      },
+    })
+  ])
 
   return new Response(
     JSON.stringify({
@@ -254,7 +246,7 @@ export async function POST(request: Request) {
         if (existingTransaction?.id) {
           continue
         }
-        
+
         // if (
         //   existingTransaction?.merchantId === null &&
         //   existingTransaction?.senderId === null
@@ -330,12 +322,10 @@ export async function POST(request: Request) {
             merchantId: null,
           })
         } else {
-
           const knownTranaction = await createUnknownTransactions(transaction)
           if (knownTranaction !== null) {
             transactionData.push(knownTranaction)
           }
-
         }
 
         // Add for moveing money

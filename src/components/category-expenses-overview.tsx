@@ -134,29 +134,29 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
 
             {selectedCategory && expensesData && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border">
                   <TrendingDown className="h-8 w-8 text-red-500" />
                   <div>
-                    <p className="text-sm text-gray-600">Total Expenses</p>
-                    <p className="text-2xl font-bold text-red-600">
+                    <p className="text-sm text-muted-foreground">Total Expenses</p>
+                    <p className="text-2xl font-bold text-red-600 dark:text-red-400">
                       {formatCurrency(expensesData.totalExpenses)}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border">
                   <Receipt className="h-8 w-8 text-blue-500" />
                   <div>
-                    <p className="text-sm text-gray-600">Transactions</p>
-                    <p className="text-2xl font-bold text-blue-600">
+                    <p className="text-sm text-muted-foreground">Transactions</p>
+                    <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                       {expensesData.transactionCount}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border">
                   <Calendar className="h-8 w-8 text-green-500" />
                   <div>
-                    <p className="text-sm text-gray-600">Average per Transaction</p>
-                    <p className="text-2xl font-bold text-green-600">
+                    <p className="text-sm text-muted-foreground">Average per Transaction</p>
+                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                       {formatCurrency(expensesData.totalExpenses / expensesData.transactionCount)}
                     </p>
                   </div>
@@ -181,7 +181,7 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
               {isDataLoading ? (
                 <div className="flex items-center justify-center h-32 space-x-2">
                   <Loader2 className="h-6 w-6 animate-spin" />
-                  <span>Loading merchant data...</span>
+                  <span className="text-muted-foreground">Loading merchant data...</span>
                 </div>
               ) : expensesData?.merchantSummary ? (
                 <Table>
@@ -215,7 +215,7 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
                   </TableBody>
                 </Table>
               ) : (
-                <p className="text-center text-gray-500 py-8">No data available</p>
+                <p className="text-center text-muted-foreground py-8">No data available</p>
               )}
             </CardContent>
           </Card>
@@ -232,7 +232,7 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
               {isDataLoading ? (
                 <div className="flex items-center justify-center h-32 space-x-2">
                   <Loader2 className="h-6 w-6 animate-spin" />
-                  <span>Loading transactions...</span>
+                  <span className="text-muted-foreground">Loading transactions...</span>
                 </div>
               ) : expensesData?.transactions ? (
                 <Table>
@@ -257,7 +257,7 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
                               {transaction.subcategory.name}
                             </Badge>
                           ) : (
-                            <span className="text-gray-400">No subcategory</span>
+                            <span className="text-muted-foreground">No subcategory</span>
                           )}
                         </TableCell>
                         <TableCell className="text-right font-medium">
@@ -268,7 +268,7 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
                   </TableBody>
                 </Table>
               ) : (
-                <p className="text-center text-gray-500 py-8">No transactions found</p>
+                <p className="text-center text-muted-foreground py-8">No transactions found</p>
               )}
             </CardContent>
           </Card>
