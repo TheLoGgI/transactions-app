@@ -17,6 +17,7 @@ export async function GET() {
   });
 }
 
+
 // export async function PUT(request: Request) {
 //   // Parse the request body
 //   const body = await request.json() as  { id: number; name: string; color: string };
@@ -53,7 +54,7 @@ export async function POST(request: Request) {
       },
       data: {
         color: categoryColor,
-        name: categoryName
+        name: categoryName,
       }
     })
 

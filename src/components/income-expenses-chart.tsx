@@ -91,7 +91,7 @@ export function IncomeExpensesChart({ query }: IncomeExpensesChartProps) {
                 Period
               </span>
               <span className="font-bold text-muted-foreground">
-                {label ? formatDate(label) : ''}
+                {/* {label ? formatDate(label) : ''} */}
               </span>
             </div>
             <div className="flex flex-col">
@@ -171,7 +171,7 @@ export function IncomeExpensesChart({ query }: IncomeExpensesChartProps) {
             <LineChart
               data={data.map(item => ({
                 ...item,
-                date: formatDate(item.date)
+                // date: formatDate(item.date)
               }))}
               margin={{
                 top: 5,

@@ -13,7 +13,6 @@ interface Category {
     id: number
     name: string
     color: string
-    // type?: "income" | "expense"
 }
 
 interface CategoryManagerProps extends ComponentProps<typeof Sidebar> {

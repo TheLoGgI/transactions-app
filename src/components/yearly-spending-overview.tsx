@@ -43,21 +43,21 @@ const fetcher = async (url: string): Promise<OverviewResponse> => {
 export function YearlySpendingOverview() {
     const currentYear = new Date().getFullYear()
     const { data: overview, error, isLoading } = useSWR<OverviewResponse, Error>(
-        `/api/transactions/overview?year=${currentYear}`, 
+        `/api/transactions/overview?year=${currentYear}`,
         fetcher
     )
-    
+
     const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
 
     const formatCurrency = (amount: number) => {
         if (amount === 0) return "0.00"
-        return amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        return amount.toLocaleString("da-DK", { minimumFractionDigits: 2, maximumFractionDigits: 2, style: "currency", currency: "DKK" })
     }
 
     const getCellColor = (amount: number, isTotal = false) => {
-        if (amount === 0) return "text-gray-400"
-        if (isTotal) return "font-semibold text-blue-600"
-        return "text-gray-900"
+        if (amount === 0) return "text-muted-foreground"
+        if (isTotal) return "font-semibold text-primary"
+        return "text-foreground"
     }
 
     if (isLoading) {
@@ -69,7 +69,7 @@ export function YearlySpendingOverview() {
                 </CardHeader>
                 <CardContent>
                     <div className="flex items-center justify-center p-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                     </div>
                 </CardContent>
             </Card>
@@ -84,7 +84,7 @@ export function YearlySpendingOverview() {
                     <CardDescription>Error loading spending data</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="text-center p-8 text-red-600">
+                    <div className="text-center p-8 text-destructive">
                         Failed to load spending overview. Please try again later.
                     </div>
                 </CardContent>
@@ -95,110 +95,136 @@ export function YearlySpendingOverview() {
     const { spendingSections, summary } = overview
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Yearly Spending Overview by Category ({overview.year})</CardTitle>
-                <CardDescription>Monthly breakdown of expenses across different categories</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="overflow-x-auto">
-                    <Table>
-                        <TableHeader>
-                            <TableRow className="bg-gray-50">
-                                <TableHead className="font-semibold text-gray-900 min-w-[200px]">Category</TableHead>
-                                {months.map((month) => (
-                                    <TableHead key={month} className="text-center font-semibold text-gray-900 min-w-[80px]">
-                                        {month}
-                                    </TableHead>
-                                ))}
-                                <TableHead className="text-center font-semibold text-gray-900 min-w-[100px]">TOTAL</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {spendingSections.map((section, sectionIndex) => (
-                                <React.Fragment key={sectionIndex}>
-                                    {/* Section Header */}
-                                    <TableRow className="bg-gray-100">
-                                        <TableCell colSpan={14} className="font-bold text-gray-800 py-2">
-                                            {section.title}
-                                        </TableCell>
-                                    </TableRow>
+        <>
+            {/* Summary Statistics */}
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card className="border-border dark:border-border bg-card dark:bg-card">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium text-card-foreground dark:text-card-foreground">Average Monthly Spending</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold text-card-foreground dark:text-card-foreground">
+                            {summary.averageMonthly.toLocaleString("da-DK", { style: "currency", currency: "DKK" })}
+                        </div>
+                        <p className="text-xs text-muted-foreground dark:text-muted-foreground">
+                            Monthly average across {overview.year}
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card className="border-border dark:border-border bg-card dark:bg-card">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium text-card-foreground dark:text-card-foreground">Highest Monthly Spending</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+                            {summary.highestMonthly.toLocaleString("da-DK", { style: "currency", currency: "DKK" })}
+                        </div>
+                        <p className="text-xs text-muted-foreground dark:text-muted-foreground">
+                            Peak spending month
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card className="border-border dark:border-border bg-card dark:bg-card">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium text-card-foreground dark:text-card-foreground">Lowest Monthly Spending</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                            {summary.lowestMonthly.toLocaleString("da-DK", { style: "currency", currency: "DKK" })}
+                        </div>
+                        <p className="text-xs text-muted-foreground dark:text-muted-foreground">
+                            Minimum spending month
+                        </p>
+                    </CardContent>
+                </Card>
+            </div>
 
-                                    {/* Section Categories */}
-                                    {section.categories.map((category, categoryIndex) => (
-                                        <TableRow key={`${sectionIndex}-${categoryIndex}`} className="hover:bg-gray-50">
-                                            <TableCell className="font-medium text-gray-700 pl-4">{category.name}</TableCell>
-                                            {months.map((month) => (
-                                                <TableCell
-                                                    key={month}
-                                                    className={`text-right ${getCellColor(category.monthlyAmounts[month] ?? 0)}`}
-                                                >
-                                                    {formatCurrency(category.monthlyAmounts[month] ?? 0)}
-                                                </TableCell>
-                                            ))}
-                                            <TableCell className={`text-right ${getCellColor(category.total, true)}`}>
-                                                ${formatCurrency(category.total)}
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Yearly Spending Overview by Category ({overview.year})</CardTitle>
+                    <CardDescription>Monthly breakdown of expenses across different categories</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="overflow-x-auto">
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="bg-muted/50">
+                                    <TableHead className="font-semibold text-foreground min-w-[200px]">Category</TableHead>
+                                    {months.map((month) => (
+                                        <TableHead key={month} className="text-center font-semibold text-foreground min-w-[80px]">
+                                            {month}
+                                        </TableHead>
+                                    ))}
+                                    <TableHead className="text-center font-semibold text-foreground min-w-[100px]">TOTAL</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {spendingSections.map((section, sectionIndex) => (
+                                    <React.Fragment key={sectionIndex}>
+                                        {/* Section Header */}
+                                        <TableRow className="bg-muted/30">
+                                            <TableCell colSpan={14} className="font-bold text-foreground py-2">
+                                                {section.title}
                                             </TableCell>
                                         </TableRow>
-                                    ))}
 
-                                    {/* Section Total */}
-                                    <TableRow className="bg-blue-50 border-t-2 border-blue-200">
-                                        <TableCell className="font-bold text-blue-800">Total {section.title}</TableCell>
-                                        {months.map((month) => {
-                                            const monthTotal = section.categories.reduce(
-                                                (sum, cat) => sum + (cat.monthlyAmounts[month] ?? 0),
-                                                0,
-                                            )
-                                            return (
-                                                <TableCell key={month} className="text-right font-semibold text-blue-700">
-                                                    {formatCurrency(monthTotal)}
+                                        {/* Section Categories */}
+                                        {section.categories.map((category, categoryIndex) => (
+                                            <TableRow key={`${sectionIndex}-${categoryIndex}`} className="hover:bg-muted/20">
+                                                <TableCell className="font-medium text-foreground pl-4">{category.name}</TableCell>
+                                                {months.map((month) => (
+                                                    <TableCell
+                                                        key={month}
+                                                        className={`text-right ${getCellColor(category.monthlyAmounts[month] ?? 0)}`}
+                                                    >
+                                                        {formatCurrency(category.monthlyAmounts[month] ?? 0)}
+                                                    </TableCell>
+                                                ))}
+                                                <TableCell className={`text-right ${getCellColor(category.total, true)}`}>
+                                                    {formatCurrency(category.total)}
                                                 </TableCell>
-                                            )
-                                        })}
-                                        <TableCell className="text-right font-bold text-blue-800">
-                                            ${formatCurrency(section.sectionTotal)}
-                                        </TableCell>
-                                    </TableRow>
-                                </React.Fragment>
-                            ))}
+                                            </TableRow>
+                                        ))}
 
-                            {/* Grand Total */}
-                            <TableRow className="bg-gray-800 text-white border-t-4 border-gray-600">
-                                <TableCell className="font-bold">TOTAL EXPENSES</TableCell>
-                                {summary.monthlyTotals.map((monthTotal, index) => (
-                                    <TableCell key={months[index]} className="text-right font-bold">
-                                        {formatCurrency(monthTotal)}
-                                    </TableCell>
+                                        {/* Section Total */}
+                                        <TableRow className="bg-primary/10 border-t-2 border-primary/20">
+                                            <TableCell className="font-bold text-primary">Total {section.title}</TableCell>
+                                            {months.map((month) => {
+                                                const monthTotal = section.categories.reduce(
+                                                    (sum, cat) => sum + (cat.monthlyAmounts[month] ?? 0),
+                                                    0,
+                                                )
+                                                return (
+                                                    <TableCell key={month} className="text-right font-semibold text-primary">
+                                                        {formatCurrency(monthTotal)}
+                                                    </TableCell>
+                                                )
+                                            })}
+                                            <TableCell className="text-right font-bold text-primary">
+                                                {formatCurrency(section.sectionTotal)}
+                                            </TableCell>
+                                        </TableRow>
+                                    </React.Fragment>
                                 ))}
-                                <TableCell className="text-right font-bold text-lg">${formatCurrency(summary.grandTotal)}</TableCell>
-                            </TableRow>
-                        </TableBody>
-                    </Table>
-                </div>
 
-                {/* Summary Statistics */}
-                <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Card>
-                        <CardContent className="pt-6">
-                            <div className="text-2xl font-bold">${formatCurrency(summary.averageMonthly)}</div>
-                            <p className="text-xs text-muted-foreground">Average Monthly Spending</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardContent className="pt-6">
-                            <div className="text-2xl font-bold">${formatCurrency(summary.highestMonthly)}</div>
-                            <p className="text-xs text-muted-foreground">Highest Monthly Spending</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardContent className="pt-6">
-                            <div className="text-2xl font-bold">${formatCurrency(summary.lowestMonthly)}</div>
-                            <p className="text-xs text-muted-foreground">Lowest Monthly Spending</p>
-                        </CardContent>
-                    </Card>
-                </div>
-            </CardContent>
-        </Card>
+                                {/* Grand Total */}
+                                <TableRow className="bg-accent border-t-4 border-border">
+                                    <TableCell className="font-bold text-accent-foreground">TOTAL EXPENSES</TableCell>
+                                    {summary.monthlyTotals.map((monthTotal, index) => (
+                                        <TableCell key={months[index]} className="text-right font-bold text-accent-foreground">
+                                            {formatCurrency(monthTotal)}
+                                        </TableCell>
+                                    ))}
+                                    <TableCell className="text-right font-bold text-lg text-accent-foreground">{formatCurrency(summary.grandTotal)}</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </div>
+
+
+                </CardContent>
+            </Card>
+        </>
     )
 }

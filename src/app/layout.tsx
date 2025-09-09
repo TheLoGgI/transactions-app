@@ -5,6 +5,7 @@ import "@/styles/globals.css";
 
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
+import { SWRConfig } from "swr";
 
 export const metadata: Metadata = {
   title: "Transactions Dashbaord",
@@ -24,10 +25,19 @@ export default function RootLayout({
     <html lang="en" className={geist.variable} suppressHydrationWarning>
       <body>
         <ThemeProvider>
-          <SidebarProvider>
-            <AppSidebar />
-            {children}
-          </SidebarProvider>
+          <SWRConfig
+            value={{
+              refreshInterval: 30000, // Refresh every 30 seconds
+              revalidateOnFocus: false,
+              errorRetryCount: 3,
+              errorRetryInterval: 1000,
+            }}
+          >
+            <SidebarProvider>
+              <AppSidebar />
+              {children}
+            </SidebarProvider>
+          </SWRConfig>
         </ThemeProvider>
       </body>
     </html>

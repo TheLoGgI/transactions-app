@@ -7,56 +7,48 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus } from "lucide-react"
+import type { BudgetCategory } from "@/app/budget/budget"
 
 interface BudgetFormDialogProps {
-  categories: Array<{
-    id: number
-    name: string
-    color: string
-  }>
-  existingBudget?: {
-    id: number
-    categoryId: number
-    amount: number
-    period: string
-  }
+  categories: BudgetCategory[]
   onSave: (budgetData: {
     categoryId: number
     amount: number
     period: string
+    startDate?: string
+    endDate?: string
   }) => void
   trigger?: React.ReactNode
 }
 
-export function BudgetFormDialog({ categories, existingBudget, onSave, trigger }: BudgetFormDialogProps) {
+export function BudgetFormDialog({ categories, onSave, trigger }: BudgetFormDialogProps) {
   const [open, setOpen] = useState(false)
-  const [formData, setFormData] = useState({
-    categoryId: existingBudget?.categoryId ?? 0,
-    amount: existingBudget?.amount ?? 0,
-    period: existingBudget?.period ?? "MONTHLY"
-  })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSaveBudget = (e: React.FormEvent) => {
     e.preventDefault()
-    if (formData.categoryId === 0 || formData.amount <= 0) return
-    
-    onSave(formData)
-    setOpen(false)
-    
-    // Reset form if creating new budget
-    if (!existingBudget) {
-      setFormData({
-        categoryId: 0,
-        amount: 0,
-        period: "MONTHLY"
-      })
+    const formData = new FormData(e.target as HTMLFormElement)
+
+    const categoryId = parseInt(formData.get('category') as string)
+    const amount = parseFloat(formData.get('amount') as string)
+    const period = formData.get('period') as string
+    const startDate = formData.get('startDate') as string
+    const endDate = formData.get('endDate') as string
+
+    const budgetData = { 
+      categoryId, 
+      amount, 
+      period,
+      ...(startDate && { startDate }),
+      ...(endDate && { endDate })
     }
+
+    console.log('Budget data:', budgetData)
+
+    onSave(budgetData)
+    setOpen(false)
   }
-
-  const availableCategories = existingBudget 
-    ? categories 
-    : categories.filter(_cat => !categories.some(c => c.id === formData.categoryId))
-
+  
+  
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -70,22 +62,24 @@ export function BudgetFormDialog({ categories, existingBudget, onSave, trigger }
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>
-            {existingBudget ? "Edit Budget" : "Create New Budget"}
+            {false ? "Edit Budget" : "Create New Budget"}
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSaveBudget} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
             <Select
-              value={formData.categoryId.toString()}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, categoryId: parseInt(value) }))}
-              disabled={!!existingBudget}
+              name="category"
+              // value={formData.categoryId.toString()}
+              // defaultValue=""
+              // onValueChange={(value) => setFormData(prev => ({ ...prev, categoryId: parseInt(value) }))}
+              // disabled={!!existingBudget}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select a category" />
+                <SelectValue placeholder="Select a category"  />
               </SelectTrigger>
               <SelectContent>
-                {availableCategories.map((category) => (
+                {categories.map((category) => (
                   <SelectItem key={category.id} value={category.id.toString()}>
                     <div className="flex items-center gap-2">
                       <div 
@@ -101,14 +95,15 @@ export function BudgetFormDialog({ categories, existingBudget, onSave, trigger }
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="amount">Budget Amount ($)</Label>
+            <Label htmlFor="amount">Budget (kr)</Label>
             <Input
               id="amount"
+              name="amount"
               type="number"
               min="0"
               step="0.01"
-              value={formData.amount}
-              onChange={(e) => setFormData(prev => ({ ...prev, amount: parseFloat(e.target.value) || 0 }))}
+              // value={formData.amount}
+              // onChange={(e) => setFormData(prev => ({ ...prev, amount: parseFloat(e.target.value) || 0 }))}
               placeholder="Enter budget amount"
             />
           </div>
@@ -116,19 +111,47 @@ export function BudgetFormDialog({ categories, existingBudget, onSave, trigger }
           <div className="space-y-2">
             <Label htmlFor="period">Period</Label>
             <Select
-              value={formData.period}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, period: value }))}
+              name="period"
+              defaultValue="MONTHLY"
+              // value={formData.period}
+              // onValueChange={(value) => setFormData(prev => ({ ...prev, period: value }))}
             >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="WEEKLY">Weekly</SelectItem>
-                <SelectItem value="MONTHLY">Monthly</SelectItem>
+                <SelectItem value="MONTHLY" >Monthly</SelectItem>
                 <SelectItem value="QUARTERLY">Quarterly</SelectItem>
                 <SelectItem value="YEARLY">Yearly</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="startDate">Start Date (Optional)</Label>
+            <Input
+              id="startDate"
+              name="startDate"
+              type="date"
+              // defaultValue={new Date().toISOString().split('T')[0]}
+              // value={formData.startDate}
+              // onChange={(e) => setFormData(prev => ({ ...prev, startDate: e.target.value }))}
+            />
+            <p className="text-xs text-muted-foreground">Leave empty to start from budget creation date</p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="endDate">End Date (Optional)</Label>
+            <Input
+              id="endDate"
+              name="endDate"
+              type="date"
+              // value={formData.endDate}
+              // onChange={(e) => setFormData(prev => ({ ...prev, endDate: e.target.value }))}
+              placeholder="Leave empty for ongoing budget"
+            />
+            <p className="text-xs text-muted-foreground">Leave empty for an ongoing budget with no end date</p>
           </div>
           
           <div className="flex justify-end gap-2 pt-4">
@@ -137,9 +160,9 @@ export function BudgetFormDialog({ categories, existingBudget, onSave, trigger }
             </Button>
             <Button 
               type="submit" 
-              disabled={formData.categoryId === 0 || formData.amount <= 0}
+              // disabled={formData.categoryId === 0 || formData.amount <= 0}
             >
-              {existingBudget ? "Update Budget" : "Create Budget"}
+              {false ? "Update Budget" : "Create Budget"}
             </Button>
           </div>
         </form>

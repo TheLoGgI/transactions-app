@@ -247,7 +247,7 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
                   <TableBody>
                     {expensesData.transactions.slice(0, 20).map((transaction) => (
                       <TableRow key={transaction.id}>
-                        <TableCell>{formatDate(transaction.createdAt)}</TableCell>
+                        {/* <TableCell>{formatDate(transaction.createdAt)}</TableCell> */}
                         <TableCell className="font-medium">
                           {transaction.merchant?.name ?? transaction.Sender?.name ?? 'Unknown'}
                         </TableCell>

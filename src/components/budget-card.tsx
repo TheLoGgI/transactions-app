@@ -9,6 +9,8 @@ interface BudgetCardProps {
     categoryId: number
     amount: number
     period: string
+    // startDate?: string
+    // endDate?: string
     category: {
       id: number
       name: string
@@ -24,7 +26,7 @@ interface BudgetCardProps {
 }
 
 export function BudgetCard({ budget, onEdit }: BudgetCardProps) {
-  const { category, amount, spent, remaining, percentageUsed, isOverBudget, period, daysRemaining } = budget
+  const { category, amount, spent, remaining, percentageUsed, isOverBudget, period } = budget
 
   const getStatusColor = () => {
     if (isOverBudget) return "destructive"
@@ -58,7 +60,7 @@ export function BudgetCard({ budget, onEdit }: BudgetCardProps) {
           <div className="flex justify-between text-sm">
             <span>Spent</span>
             <span className={isOverBudget ? "text-red-600 font-semibold" : "text-foreground"}>
-              ${spent.toFixed(2)}
+              {spent.toLocaleString("da-DK", { style: "currency", currency: "DKK" })}
             </span>
           </div>
           <Progress 
@@ -70,7 +72,7 @@ export function BudgetCard({ budget, onEdit }: BudgetCardProps) {
             } as React.CSSProperties}
           />
           <div className="flex justify-between text-sm text-muted-foreground">
-            <span>Budget: ${amount.toFixed(2)}</span>
+            <span>Budget: {amount.toLocaleString("da-DK", { style: "currency", currency: "DKK" })}</span>
             <span>{percentageUsed.toFixed(1)}%</span>
           </div>
         </div>
@@ -79,14 +81,17 @@ export function BudgetCard({ budget, onEdit }: BudgetCardProps) {
           <div className="text-sm">
             <span className="text-muted-foreground">Remaining: </span>
             <span className={remaining > 0 ? "text-green-600" : "text-red-600"}>
-              ${remaining > 0 ? remaining.toFixed(2) : `(${Math.abs(remaining).toFixed(2)})`}
+              {remaining > 0 
+                ? remaining.toLocaleString("da-DK", { style: "currency", currency: "DKK" })
+                : `(${Math.abs(remaining).toLocaleString("da-DK", { style: "currency", currency: "DKK" })})`
+              }
             </span>
           </div>
-          {daysRemaining !== undefined && (
-            <div className="text-sm text-muted-foreground">
-              {daysRemaining} days left
-            </div>
-          )}
+          {/* <div className="flex flex-col items-end text-xs text-muted-foreground">
+            {daysRemaining !== undefined && (
+              <div>{daysRemaining} days left</div>
+            )}
+          </div> */}
         </div>
         
         <div className="text-xs text-muted-foreground">

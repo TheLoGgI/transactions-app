@@ -1,4 +1,5 @@
-import { PrismaClient, BudgetPeriod } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
+import type { BudgetPeriod } from '@prisma/client'
 import type { NextRequest } from 'next/server'
 
 const prisma = new PrismaClient()
@@ -22,38 +23,76 @@ interface BudgetWithSpending {
   daysRemaining?: number
 }
 
-function getDateRangeForPeriod(period: BudgetPeriod, startDate: Date): { start: Date; end: Date } {
-  const start = new Date(startDate)
-  const end = new Date(startDate)
-
+// Helper function to calculate how many periods fit in the given date range
+function calculatePeriodMultiplier(period: BudgetPeriod, fromDate: Date, toDate: Date): number {
+  const timeDiffMs = toDate.getTime() - fromDate.getTime()
+  const timeDiffDays = Math.ceil(timeDiffMs / (1000 * 60 * 60 * 24))
+  
   switch (period) {
     case 'WEEKLY':
-      end.setDate(start.getDate() + 7)
-      break
+      return Math.max(1, Math.ceil(timeDiffDays / 7))
     case 'MONTHLY':
-      end.setMonth(start.getMonth() + 1)
-      break
+      // More accurate monthly calculation
+      const startYear = fromDate.getFullYear()
+      const startMonth = fromDate.getMonth()
+      const endYear = toDate.getFullYear()
+      const endMonth = toDate.getMonth()
+      
+      // Calculate total months including partial months
+      let monthsDiff = (endYear - startYear) * 12 + (endMonth - startMonth)
+      
+      // Add 1 if we're spanning into another month or if it's the same month
+      if (toDate.getDate() >= fromDate.getDate() || monthsDiff === 0) {
+        monthsDiff += 1
+      }
+      
+      return Math.max(1, monthsDiff)
     case 'QUARTERLY':
-      end.setMonth(start.getMonth() + 3)
-      break
+      // More precise quarterly calculation (3 months = 1 quarter)
+      return Math.max(1, Math.ceil(timeDiffDays / 90))
     case 'YEARLY':
-      end.setFullYear(start.getFullYear() + 1)
-      break
+      // More accurate yearly calculation
+      const years = toDate.getFullYear() - fromDate.getFullYear()
+      const monthDiff = toDate.getMonth() - fromDate.getMonth()
+      const dayDiff = toDate.getDate() - fromDate.getDate()
+      
+      // Calculate fractional years more precisely
+      let yearMultiplier = years
+      if (monthDiff > 0 || (monthDiff === 0 && dayDiff >= 0)) {
+        yearMultiplier += (monthDiff + (dayDiff >= 0 ? 1 : 0)) / 12
+      } else if (monthDiff < 0) {
+        yearMultiplier += monthDiff / 12
+      }
+      
+      return Math.max(1, Math.ceil(yearMultiplier))
+    default:
+      return 1
   }
-
-  return { start, end }
 }
 
 export async function GET(request: NextRequest) {
+  const url = new URL(request.url)
+  const paramFrom = url.searchParams.get('from')
+  const paramTo = url.searchParams.get('to')
+
+  let fromDate = paramFrom ? new Date(paramFrom) : null
+  let toDate = paramTo ? new Date(paramTo) : null
+
+  if (!fromDate || !toDate) {
+    const today = new Date()
+    fromDate = new Date(today.getFullYear(), today.getMonth() - 12, 1)
+    toDate = new Date(today.getFullYear(), today.getMonth(), 0)
+  }
+
   try {
     const { searchParams } = new URL(request.url)
     const categoryId = searchParams.get('categoryId')
 
     // Fetch active budgets
-    const budgets = await prisma.budget.findMany({
+    const budgets = (await prisma.budget.findMany({
       where: {
         isActive: true,
-        ...(categoryId && { categoryId: parseInt(categoryId) })
+        ...(categoryId && { categoryId: parseInt(categoryId) }),
       },
       include: {
         category: {
@@ -61,10 +100,10 @@ export async function GET(request: NextRequest) {
             id: true,
             name: true,
             color: true,
-          }
-        }
-      }
-    }) as Array<{
+          },
+        },
+      },
+    })) as Array<{
       id: number
       categoryId: number
       amount: number
@@ -81,36 +120,35 @@ export async function GET(request: NextRequest) {
     // Calculate spending for each budget
     const budgetsWithSpending: BudgetWithSpending[] = await Promise.all(
       budgets.map(async (budget): Promise<BudgetWithSpending> => {
-        const { start, end } = getDateRangeForPeriod(budget.period, budget.startDate)
-        const currentEnd: Date = budget.endDate && budget.endDate < end ? budget.endDate : end
-        
+        // Calculate how many periods the selected date range covers
+        const periodMultiplier = calculatePeriodMultiplier(budget.period, fromDate, toDate)
+        const scaledBudgetAmount = budget.amount * periodMultiplier
+
         // Calculate total spending for this category in the period
-        const transactions = await prisma.transaction.findMany({
+        const totalExpenses = await prisma.transaction.aggregate({
+          _sum: {
+            amount: true,
+          },
           where: {
             categoryId: budget.categoryId,
             createdAt: {
-              gte: start,
-              lte: currentEnd
+              gte: fromDate,
+              lte: toDate,
             },
-            amount: {
-              lt: 0 // Only expenses (negative amounts)
-            }
-          }
+            merchant: { isNot: null },
+          },
         })
 
-        const spent = Math.abs(transactions.reduce((sum: number, transaction: { amount: number }) => sum + transaction.amount, 0))
-        const remaining = Math.max(0, budget.amount - spent)
-        const percentageUsed = budget.amount > 0 ? (spent / budget.amount) * 100 : 0
-        const isOverBudget = spent > budget.amount
-
-        // Calculate days remaining in period
-        const now = new Date()
-        const daysRemaining = currentEnd > now ? Math.ceil((currentEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)) : 0
+        const spent = Math.abs(totalExpenses._sum.amount ?? 0)
+        const remaining = Math.max(0, scaledBudgetAmount - spent)
+        const percentageUsed =
+          scaledBudgetAmount > 0 ? (spent / scaledBudgetAmount) * 100 : 0
+        const isOverBudget = spent > scaledBudgetAmount
 
         return {
           id: budget.id,
           categoryId: budget.categoryId,
-          amount: budget.amount,
+          amount: scaledBudgetAmount, // Return the scaled amount
           period: budget.period,
           startDate: budget.startDate,
           endDate: budget.endDate,
@@ -119,20 +157,22 @@ export async function GET(request: NextRequest) {
           remaining,
           percentageUsed,
           isOverBudget,
-          daysRemaining
         }
-      })
+      }),
     )
 
     return new Response(JSON.stringify(budgetsWithSpending), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     })
   } catch (error) {
     console.error('Error fetching budget tracking:', error)
-    return new Response(JSON.stringify({ error: 'Failed to fetch budget tracking' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    })
+    return new Response(
+      JSON.stringify({ error: 'Failed to fetch budget tracking' }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    )
   }
 }

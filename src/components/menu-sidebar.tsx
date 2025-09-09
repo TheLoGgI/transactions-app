@@ -13,6 +13,12 @@ import {
   Settings2,
   PiggyBank,
   SquareTerminal,
+  Target,
+  TrendingUp,
+  Calculator,
+  AlertTriangle,
+  Zap,
+  Heart,
 } from "lucide-react"
 
 // import { NavMain } from "@/components/nav-main"
@@ -27,7 +33,9 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { NavMain } from "./menu-sidebar-content"
+import { SavingsNavigation } from "./savings-navigation"
 import { ThemeToggle } from "./theme-toggle"
+import { UploadButton } from "./uploadButton"
 
 // This is sample data.
 const data = {
@@ -67,18 +75,50 @@ const data = {
     },
     {
       title: "Års oversigt",
-      url: "#",
+      url: "/annually-report",
       icon: BookOpen,
     },
     {
       title: "Analyse",
-      url: "#",
+      url: "/analysis",
       icon: Settings2,
     },
     {
       title: "Invistering",
       url: "#",
       icon: PiggyBank,
+    },
+  ],
+  savingsAnalytics: [
+    {
+      title: "Savings Goals",
+      url: "/savings/goals",
+      icon: Target,
+    },
+    {
+      title: "Budget Optimizer",
+      url: "/savings/optimizer",
+      icon: TrendingUp,
+    },
+    {
+      title: "Savings Calculator",
+      url: "/savings/calculator",
+      icon: Calculator,
+    },
+    {
+      title: "Financial Health",
+      url: "/savings/health",
+      icon: Heart,
+    },
+    {
+      title: "Spending Alerts",
+      url: "/savings/alerts",
+      icon: AlertTriangle,
+    },
+    {
+      title: "Quick Wins",
+      url: "/savings/quick-wins",
+      icon: Zap,
     },
   ],
   projects: [
@@ -108,11 +148,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
+        <SavingsNavigation items={data.savingsAnalytics} />
         {/* <NavProjects projects={data.projects} /> */}
       </SidebarContent>
       <SidebarFooter>
         <div className="flex items-center justify-between ">
           <ThemeToggle />
+           <UploadButton />
         </div>
         {/* <NavUser user={data.user} /> */}
       </SidebarFooter>

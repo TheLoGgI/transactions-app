@@ -1,17 +1,27 @@
 
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
+import useSWR from "swr"
 import { BudgetCard } from "@/components/budget-card"
 import { BudgetFormDialog } from "@/components/budget-form-dialog"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AlertCircle, Plus, RefreshCw } from "lucide-react"
+import { DateRangeSelector } from "@/components/date-range-selector"
+import { useDateRange } from "@/hooks/useDateRange"
 
-interface Category {
+export interface BudgetCategory {
   id: number
   name: string
   color: string
+  budget: {
+    amount: number,
+    period: string,
+    isActive: boolean,
+    // startDate: string;
+    // endDate: string | null;
+  } | null
 }
 
 interface BudgetWithSpending {
@@ -21,7 +31,7 @@ interface BudgetWithSpending {
   period: string
   startDate: string
   endDate: string | null
-  category: Category
+  category: BudgetCategory
   spent: number
   remaining: number
   percentageUsed: number
@@ -29,41 +39,44 @@ interface BudgetWithSpending {
   daysRemaining?: number
 }
 
-export function Budget() {
-  const [budgets, setBudgets] = useState<BudgetWithSpending[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
-  const [loading, setLoading] = useState(true)
+// SWR fetcher function
+const fetcher = async (url: string) => {
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error(`Failed to fetch: ${response.statusText}`)
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return response.json()
+}
+
+// Custom hooks for data fetching
+const useBudgets = (urlQuery: string) => {
+  const result = useSWR<BudgetWithSpending[]>(`/api/budgets/tracking${urlQuery}`, fetcher)
+  return {
+    ...result,
+    error: result.error as Error | undefined
+  }
+}
+
+export function Budget({categories}: {categories: BudgetCategory[]}) {
+  const { selectedPeriod, dateRange, urlQuery, setPredefinedRange } = useDateRange()
+  
   const [error, setError] = useState<string | null>(null)
+  
+  // Use SWR hooks for data fetching
+  const { 
+    data: budgets = [], 
+    error: budgetsError, 
+    isLoading: budgetsLoading,
+    mutate: mutateBudgets 
+  } = useBudgets(urlQuery)
+  
+  // Combine loading states
+  const loading = budgetsLoading
 
-  const fetchBudgets = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch('/api/budgets/tracking')
-      if (!response.ok) throw new Error('Failed to fetch budgets')
-      const data = await response.json() as BudgetWithSpending[]
-      setBudgets(data)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch budgets')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('/api/categories')
-      if (!response.ok) throw new Error('Failed to fetch categories')
-      const data = await response.json() as Category[]
-      setCategories(data)
-    } catch (err) {
-      console.error('Failed to fetch categories:', err)
-    }
-  }
-
-  useEffect(() => {
-    void fetchBudgets()
-    void fetchCategories()
-  }, [])
+  // Handle errors from SWR
+  const swrError = budgetsError
+  const displayError = error ?? (swrError ? 'Failed to load data' : null)
 
   const handleSaveBudget = async (budgetData: {
     categoryId: number
@@ -71,6 +84,7 @@ export function Budget() {
     period: string
   }) => {
     try {
+      setError(null)
       const response = await fetch('/api/budgets', {
         method: 'POST',
         headers: {
@@ -81,8 +95,8 @@ export function Budget() {
 
       if (!response.ok) throw new Error('Failed to save budget')
       
-      // Refresh budgets after saving
-      await fetchBudgets()
+      // Revalidate budgets data using SWR's mutate
+      await mutateBudgets()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save budget')
     }
@@ -130,7 +144,7 @@ export function Budget() {
     )
   }
 
-  if (error) {
+  if (displayError) {
     return (
       <div className="container mx-auto py-8 px-4">
         <div className="flex flex-col gap-6">
@@ -144,13 +158,13 @@ export function Budget() {
           </header>
           <div className="flex items-center gap-2 p-4 border border-red-200 rounded-lg bg-red-50">
             <AlertCircle className="h-5 w-5 text-red-600" />
-            <span className="text-red-700">{error}</span>
+            <span className="text-red-700">{displayError}</span>
             <Button 
               variant="outline" 
               size="sm" 
               onClick={() => {
                 setError(null)
-                void fetchBudgets()
+                void mutateBudgets()
               }}
               className="ml-auto"
             >
@@ -174,16 +188,16 @@ export function Budget() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button 
+            {/* <Button 
               variant="outline" 
               size="sm" 
-              onClick={fetchBudgets}
+              onClick={() => void mutateBudgets()}
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
-            </Button>
+            </Button> */}
             <BudgetFormDialog 
-              categories={categories.filter(cat => !budgets.some(budget => budget.categoryId === cat.id))}
+              categories={categories.filter(category => !budgets.some(budget => budget.categoryId === category.id))}
               onSave={handleSaveBudget}
               trigger={
                 <Button>
@@ -192,6 +206,7 @@ export function Budget() {
                 </Button>
               }
             />
+            <DateRangeSelector selectedPeriod={selectedPeriod} onChange={setPredefinedRange} />
           </div>
         </header>
 
@@ -199,11 +214,11 @@ export function Budget() {
         <div className="grid gap-4 md:grid-cols-3">
           <div className="p-4 border rounded-lg">
             <div className="text-sm text-muted-foreground">Total Budget</div>
-            <div className="text-2xl font-bold">${totalBudget.toFixed(2)}</div>
+            <div className="text-2xl font-bold">{totalBudget.toFixed(2)} DKK</div>
           </div>
           <div className="p-4 border rounded-lg">
             <div className="text-sm text-muted-foreground">Total Spent</div>
-            <div className="text-2xl font-bold">${totalSpent.toFixed(2)}</div>
+            <div className="text-2xl font-bold">{totalSpent.toFixed(2)} DKK</div>
           </div>
           <div className="p-4 border rounded-lg">
             <div className="text-sm text-muted-foreground">Over Budget</div>
@@ -218,7 +233,7 @@ export function Budget() {
           <div className="text-center py-12">
             <div className="text-muted-foreground mb-4">No budgets created yet</div>
             <BudgetFormDialog 
-              categories={categories}
+              categories={categories.filter(category => !budgets.some(budget => budget.categoryId === category.id))}
               onSave={handleSaveBudget}
               trigger={
                 <Button>

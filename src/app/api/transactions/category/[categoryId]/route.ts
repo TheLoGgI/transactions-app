@@ -15,8 +15,8 @@ export async function GET(request: Request, { params }: GetRequestType) {
 
   if (!fromDate || !toDate) {
     const today = new Date();
-    fromDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-    toDate = today;
+    fromDate = new Date(today.getFullYear(), today.getMonth() - 12, 1)
+    toDate = new Date(today.getFullYear(), today.getMonth(), 0)
   }
 
   const transactions = await prisma.transaction.findMany({

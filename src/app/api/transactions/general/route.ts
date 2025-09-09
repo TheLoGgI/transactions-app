@@ -7,19 +7,19 @@ export interface TransactionRange {
 }
 
 export async function GET(request: Request) {
-  const url = new URL(request.url);
-  const paramFrom = url.searchParams.get("from");
-  const paramTo = url.searchParams.get("to");
+  // const url = new URL(request.url);
+  // const paramFrom = url.searchParams.get("from");
+  // const paramTo = url.searchParams.get("to");
 
-  let fromDate = paramFrom ? new Date(paramFrom) : null;
-  let toDate = paramTo ? new Date(paramTo) : null;
+  // let fromDate = paramFrom ? new Date(paramFrom) : null;
+  // let toDate = paramTo ? new Date(paramTo) : null;
 
-  // Todo: get daysInMonth to work on server side
-  if (!fromDate || !toDate) {
-    const today = new Date();
-    fromDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-    toDate = new Date(today.getFullYear(), today.getMonth(), 0);
-  }
+  // // Todo: get daysInMonth to work on server side
+  // if (!fromDate || !toDate) {
+  //   const today = new Date();
+  //   fromDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+  //   toDate = new Date(today.getFullYear(), today.getMonth(), 0);
+  // }
 
   const firstInRange = await prisma.transaction.findFirst({
     select: {

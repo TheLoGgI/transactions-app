@@ -33,7 +33,6 @@ export async function GET() {
       take: 20,
     }),
   ])
-  console.log('totalCount: ', totalCount)
 
   // Map the results to alias Sender to sender
   const mappedResults = uncategorized.map((transaction) => ({
