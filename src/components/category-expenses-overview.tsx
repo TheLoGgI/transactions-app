@@ -6,7 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Badge } from "./ui/badge";
-import { Loader2, TrendingDown, Receipt, Calendar } from "lucide-react";
+import { Loader2, TrendingDown, Receipt, Calendar, RotateCcw } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 interface Category {
   id: number;
@@ -44,6 +45,8 @@ interface Transaction {
 interface MerchantSummary {
   name: string;
   totalAmount: number;
+  returnCount: number;
+  returnTotal: number;
   transactionCount: number;
   type: 'merchant' | 'sender';
 }
@@ -52,6 +55,7 @@ interface CategoryExpensesData {
   transactions: Transaction[];
   merchantSummary: MerchantSummary[];
   totalExpenses: number;
+  totalReturns: number;
   transactionCount: number;
   categoryId: number;
 }
@@ -133,13 +137,22 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
             </div>
 
             {selectedCategory && expensesData && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border">
                   <TrendingDown className="h-8 w-8 text-red-500" />
                   <div>
                     <p className="text-sm text-muted-foreground">Total Expenses</p>
                     <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-                      {formatCurrency(expensesData.totalExpenses)}
+                      -{formatCurrency(expensesData.totalExpenses)}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border">
+                  <RotateCcw className="h-8 w-8 text-green-500" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Total Returns</p>
+                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                      +{formatCurrency(expensesData.totalReturns)}
                     </p>
                   </div>
                 </div>
@@ -153,11 +166,11 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
                   </div>
                 </div>
                 <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border">
-                  <Calendar className="h-8 w-8 text-green-500" />
+                  <Calendar className="h-8 w-8 text-orange-500" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Average per Transaction</p>
-                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                      {formatCurrency(expensesData.totalExpenses / expensesData.transactionCount)}
+                    <p className="text-sm text-muted-foreground">Net Spent</p>
+                    <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                      {formatCurrency(expensesData.totalExpenses - expensesData.totalReturns)}
                     </p>
                   </div>
                 </div>
@@ -190,7 +203,8 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
                       <TableHead>Name</TableHead>
                       <TableHead>Type</TableHead>
                       <TableHead className="text-right">Transactions</TableHead>
-                      <TableHead className="text-right">Total Amount</TableHead>
+                      <TableHead className="text-right">Returns</TableHead>
+                      <TableHead className="text-right">Total Spent</TableHead>
                       <TableHead className="text-right">Average</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -203,12 +217,33 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
                             {merchant.type}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-right">{merchant.transactionCount}</TableCell>
-                        <TableCell className="text-right font-medium">
-                          {formatCurrency(merchant.totalAmount)}
+                        <TableCell className="text-right">
+                          <span>{merchant.transactionCount - merchant.returnCount}</span>
                         </TableCell>
                         <TableCell className="text-right">
-                          {formatCurrency(merchant.totalAmount / merchant.transactionCount)}
+                          {merchant.returnCount > 0 ? (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Badge variant="outline" className="text-green-600 border-green-400 text-xs cursor-default flex items-center gap-1 ml-auto w-fit">
+                                    <RotateCcw className="h-3 w-3" />
+                                    {merchant.returnCount} · +{formatCurrency(merchant.returnTotal)}
+                                  </Badge>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  {merchant.returnCount} return{merchant.returnCount > 1 ? 's' : ''} totalling +{formatCurrency(merchant.returnTotal)}
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right font-medium">
+                          -{formatCurrency(merchant.totalAmount)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {formatCurrency(merchant.totalAmount / (merchant.transactionCount - merchant.returnCount || 1))}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -245,26 +280,36 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {expensesData.transactions.slice(0, 20).map((transaction) => (
-                      <TableRow key={transaction.id}>
-                        {/* <TableCell>{formatDate(transaction.createdAt)}</TableCell> */}
-                        <TableCell className="font-medium">
-                          {transaction.merchant?.name ?? transaction.Sender?.name ?? 'Unknown'}
-                        </TableCell>
-                        <TableCell>
-                          {transaction.subcategory?.name ? (
-                            <Badge variant="outline">
-                              {transaction.subcategory.name}
-                            </Badge>
-                          ) : (
-                            <span className="text-muted-foreground">No subcategory</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right font-medium">
-                          {formatCurrency(transaction.amount)}
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {expensesData.transactions.slice(0, 20).map((transaction) => {
+                      const isReturn = transaction.amount > 0;
+                      return (
+                        <TableRow key={transaction.id}>
+                          <TableCell>{formatDate(transaction.createdAt)}</TableCell>
+                          <TableCell className="font-medium">
+                            {transaction.merchant?.name ?? transaction.Sender?.name ?? 'Unknown'}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              {transaction.subcategory?.name ? (
+                                <Badge variant="outline">
+                                  {transaction.subcategory.name}
+                                </Badge>
+                              ) : (
+                                <span className="text-muted-foreground">No subcategory</span>
+                              )}
+                              {isReturn && (
+                                <Badge variant="outline" className="text-green-600 border-green-400">
+                                  Return
+                                </Badge>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className={`text-right font-medium ${isReturn ? 'text-green-600 dark:text-green-400' : ''}`}>
+                            {isReturn ? '+' : '-'}{formatCurrency(transaction.amount)}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               ) : (

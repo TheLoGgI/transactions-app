@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
     const paramTo = url.searchParams.get("to");
     const sortBy = url.searchParams.get('sortBy') ?? 'amount';
     const limit = parseInt(url.searchParams.get('limit') ?? '10');
+    const type = url.searchParams.get('type') ?? 'all';
 
   let fromDate = paramFrom ? new Date(paramFrom) : null;
   let toDate = paramTo ? new Date(paramTo) : null;
@@ -119,7 +120,10 @@ export async function GET(request: NextRequest) {
       .filter(Boolean);
 
     // Combine and sort
-    const allData = [...processedMerchants, ...processedSenders].filter(Boolean);
+    const allData = [
+      ...(type !== 'sender' ? processedMerchants : []),
+      ...(type !== 'merchant' ? processedSenders : []),
+    ].filter(Boolean);
 
     // Sort based on criteria
     let sortedData;

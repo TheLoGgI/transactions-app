@@ -84,7 +84,8 @@ interface UncategorizedResponse {
 }
 
 const UncategorizedTransactions = () => {
-      const { data: categories } = useSWR<Category[]>(`/api/categories`, fetcher)
+    const { data: categories } = useSWR<Category[]>(`/api/categories`, fetcher)
+    console.log('categories: ', categories);
   const { data: uncategorizedData, isLoading: uncategorizedIsLoading, isValidating } = useSWR<UncategorizedResponse>(`/api/categories/uncategorized`, fetcher)
   const { trigger: categorizeTransaction } = useSWRMutation(`/api/categories/uncategorized`, updateCategory)
   
@@ -155,7 +156,6 @@ const UncategorizedTransactions = () => {
                                                                 key={category.id}
                                                                 onClick={async () => {
                                                                     await categorizeTransaction({ transactionId: transaction.id, categoryId: category.id })
-                                                                    // await categorizeTransaction(transaction.id, category.id)
                                                                 }}
                                                             >
                                                                 <div className="flex items-center gap-2">

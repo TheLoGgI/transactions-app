@@ -80,6 +80,8 @@ export async function GET(request: Request, { params }: GetRequestType) {
   const merchantSummary = new Map<string, {
     name: string;
     totalAmount: number;
+    returnCount: number;
+    returnTotal: number;
     transactionCount: number;
     type: 'merchant' | 'sender';
   }>();
@@ -87,15 +89,23 @@ export async function GET(request: Request, { params }: GetRequestType) {
   transactions.forEach(transaction => {
     const key = transaction.merchant?.name ?? transaction.Sender?.name ?? 'Unknown';
     const type = transaction.merchant ? 'merchant' : 'sender';
-    
+    const isReturn = transaction.amount > 0;
+
     if (merchantSummary.has(key)) {
       const existing = merchantSummary.get(key)!;
-      existing.totalAmount += Math.abs(transaction.amount);
+      if (isReturn) {
+        existing.returnCount += 1;
+        existing.returnTotal += transaction.amount;
+      } else {
+        existing.totalAmount += Math.abs(transaction.amount);
+      }
       existing.transactionCount += 1;
     } else {
       merchantSummary.set(key, {
         name: key,
-        totalAmount: Math.abs(transaction.amount),
+        totalAmount: isReturn ? 0 : Math.abs(transaction.amount),
+        returnCount: isReturn ? 1 : 0,
+        returnTotal: isReturn ? transaction.amount : 0,
         transactionCount: 1,
         type,
       });

@@ -31,7 +31,7 @@ export default async function AnnualyReport() {
         >
             <SidebarInset>
                 <div className="min-h-screen bg-background">
-                    <div className="container mx-auto py-8 px-4">
+                    <div className="w-full mx-auto py-8 px-4">
                         <div className="flex flex-col gap-6">
                             <header className="flex sm:flex-row sm:items-center sm:justify-between">
                                 <div>
@@ -39,22 +39,9 @@ export default async function AnnualyReport() {
                                     <p className="text-muted-foreground">
                                         View and categorize your transactions to better understand your spending habits.
                                     </p>
-                                    {/* <p className="text-muted-foreground">
-              {totalStartDate && totalEndDate
-                ? `Data available from ${totalStartDate.toLocaleDateString("da-DK", { dateStyle: "long" })} to ${totalEndDate.toLocaleDateString("da-DK", { dateStyle: "long" })}`
-                : "No data available yet."}
-            </p> */}
+                                    
 
                                 </div>
-
-                                {/* Controls */}
-                                {/* <div> */}
-                                {/* <DateRangeSelector selectedPeriod={selectedPeriod} onChange={setPredefinedRange} />
-                      <p className="text-sm text-gray-600 font-medium py-2">
-                        {`${dateRange.from.toLocaleDateString("da-DK", { dateStyle: "long" })} to ${dateRange.to.toLocaleDateString("da-DK", { dateStyle: "long" })}`}
-                      </p> */}
-
-                                {/* </div> */}
 
                             </header>
 

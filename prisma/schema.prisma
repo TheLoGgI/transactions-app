@@ -36,6 +36,7 @@ model Categories {
     name          String          @unique
     description   String?
     color         String
+    expenseType   ExpenseType?    
     createdAt     DateTime        @default(now())
     updatedAt     DateTime        @updatedAt
     SubCategories SubCategories[]
@@ -117,4 +118,10 @@ enum BudgetPeriod {
     MONTHLY
     QUARTERLY
     YEARLY
+}
+
+enum ExpenseType {
+    FIXED
+    VARIABLE
+    SUBSCRIPTION
 }

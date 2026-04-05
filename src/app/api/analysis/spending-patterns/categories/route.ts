@@ -6,119 +6,84 @@ const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   try {
-  const url = new URL(request.url);
-  const paramFrom = url.searchParams.get("from");
-  const paramTo = url.searchParams.get("to");
+    const url = new URL(request.url);
+    const paramFrom = url.searchParams.get("from");
+    const paramTo = url.searchParams.get("to");
 
-  let fromDate = paramFrom ? new Date(paramFrom) : null;
-  let toDate = paramTo ? new Date(paramTo) : null;
+    let fromDate = paramFrom ? new Date(paramFrom) : null;
+    let toDate = paramTo ? new Date(paramTo) : null;
 
-  if (!fromDate || !toDate) {
-    const today = new Date();
-    fromDate = new Date(today.getFullYear(), today.getMonth() - 12, 1)
-    toDate = new Date(today.getFullYear(), today.getMonth(), 0)
-  }
+    if (!fromDate || !toDate) {
+      const today = new Date();
+      fromDate = new Date(today.getFullYear(), today.getMonth() - 12, 1);
+      toDate = new Date(today.getFullYear(), today.getMonth(), 0);
+    }
 
+    const dateWhere = { createdAt: { gte: fromDate, lte: toDate }, agent: 'RECEIVER' as const };
 
-    // Get category spending data through merchants
-    const merchantData = await prisma.transaction.groupBy({
-      by: ['merchantId'],
-      where: {
-        merchantId: { not: null },
-        createdAt: {
-          gte: fromDate,
-          lte: toDate,
-        },
-        agent: 'RECEIVER', // Only expenses
-      },
-      _sum: {
-        amount: true,
-      },
-      _count: {
-        id: true,
-      },
+    // Query 1: transactions with a direct categoryId
+    const grouped = await prisma.transaction.groupBy({
+      by: ['categoryId'],
+      where: { ...dateWhere, categoryId: { not: null } },
+      _sum: { amount: true },
+      _count: { id: true },
     });
 
-    // Get merchant details with category codes
-    const merchantIds = merchantData.map(m => m.merchantId).filter((id): id is string => id !== null);
-    const merchants = await prisma.merchant.findMany({
-      where: {
-        id: { in: merchantIds },
-      },
+    // Query 2: transactions with only a subcategoryId — resolve category via subcategory relation
+    const subcategoryTxs = await prisma.transaction.findMany({
+      where: { ...dateWhere, categoryId: null, subcategoryId: { not: null } },
+      select: { amount: true, subcategory: { select: { categoryId: true } } },
     });
 
-    // Group by category code
-    const categoryMap = new Map<string, {
-      categoryCode: string;
-      categoryName: string;
-      totalAmount: number;
-      transactionCount: number;
-      color: string;
-    }>();
+    // Merge both into a single map keyed by categoryId
+    const mergedMap = new Map<number, { amount: number; count: number }>();
 
-    // Map category codes to readable names
-    const getCategoryName = (code: string): string => {
-      const categoryNames: Record<string, string> = {
-        'GROCERY': 'Groceries',
-        'RESTAURANT': 'Restaurants',
-        'GAS_STATION': 'Gas Stations',
-        'RETAIL': 'Retail',
-        'ENTERTAINMENT': 'Entertainment',
-        'HEALTHCARE': 'Healthcare',
-        'TRANSPORT': 'Transportation',
-        'SERVICES': 'Services',
-        'OTHER': 'Other',
-      };
-      return categoryNames[code] ?? code;
-    };
+    for (const g of grouped) {
+      if (g.categoryId === null) continue;
+      mergedMap.set(g.categoryId, { amount: g._sum.amount ?? 0, count: g._count.id });
+    }
 
-    const getCategoryColor = (code: string): string => {
-      const colors: Record<string, string> = {
-        'GROCERY': '#10B981',
-        'RESTAURANT': '#F59E0B',
-        'GAS_STATION': '#EF4444',
-        'RETAIL': '#8B5CF6',
-        'ENTERTAINMENT': '#EC4899',
-        'HEALTHCARE': '#06B6D4',
-        'TRANSPORT': '#84CC16',
-        'SERVICES': '#6366F1',
-        'OTHER': '#6B7280',
-      };
-      return colors[code] ?? '#6B7280';
-    };
-
-    merchantData.forEach(item => {
-      const merchant = merchants.find(m => m.id === item.merchantId);
-      if (!merchant || !item._sum.amount) return;
-
-      const categoryCode = merchant.categoryCode;
-      const existing = categoryMap.get(categoryCode);
-      const amount = Math.abs(item._sum.amount);
-
+    for (const tx of subcategoryTxs) {
+      const catId = tx.subcategory?.categoryId;
+      if (!catId) continue;
+      const existing = mergedMap.get(catId);
       if (existing) {
-        existing.totalAmount += amount;
-        existing.transactionCount += item._count.id;
+        existing.amount += tx.amount;
+        existing.count += 1;
       } else {
-        categoryMap.set(categoryCode, {
-          categoryCode,
-          categoryName: getCategoryName(categoryCode),
-          totalAmount: amount,
-          transactionCount: item._count.id,
-          color: getCategoryColor(categoryCode),
-        });
+        mergedMap.set(catId, { amount: tx.amount, count: 1 });
       }
+    }
+
+    // Fetch the matching category records
+    const categoryIds = [...mergedMap.keys()];
+
+    const categories = await prisma.categories.findMany({
+      where: { id: { in: categoryIds } },
     });
 
     // Calculate total for percentages
-    const totalSpending = Array.from(categoryMap.values()).reduce((sum, category) => sum + category.totalAmount, 0);
+    const totalSpending = [...mergedMap.values()].reduce(
+      (sum, g) => sum + Math.abs(g.amount),
+      0,
+    );
 
-    // Convert to array and add percentages
-    const result = Array.from(categoryMap.values())
-      .map(category => ({
-        ...category,
-        percentage: (category.totalAmount / totalSpending) * 100,
-      }))
-      .sort((a, b) => b.totalAmount - a.totalAmount);
+    const result = [...mergedMap.entries()]
+      .map(([catId, data]) => {
+        const category = categories.find(c => c.id === catId);
+        if (!category) return null;
+        const totalAmount = Math.abs(data.amount);
+        return {
+          categoryCode: String(category.id),
+          categoryName: category.name,
+          totalAmount,
+          transactionCount: data.count,
+          color: category.color,
+          percentage: totalSpending > 0 ? (totalAmount / totalSpending) * 100 : 0,
+        };
+      })
+      .filter(Boolean)
+      .sort((a, b) => b!.totalAmount - a!.totalAmount);
 
     return NextResponse.json(result);
   } catch (error) {

@@ -19,12 +19,9 @@ import {
   AlertTriangle,
   Zap,
   Heart,
+  RefreshCw,
 } from "lucide-react"
 
-// import { NavMain } from "@/components/nav-main"
-// import { NavProjects } from "@/components/nav-projects"
-// import { NavUser } from "@/components/nav-user"
-// import { TeamSwitcher } from "@/components/team-switcher"
 import {
   Sidebar,
   SidebarContent,
@@ -36,6 +33,9 @@ import { NavMain } from "./menu-sidebar-content"
 import { SavingsNavigation } from "./savings-navigation"
 import { ThemeToggle } from "./theme-toggle"
 import { UploadButton } from "./uploadButton"
+import { Button } from "./ui/button"
+import { mutate } from "swr"
+import { toast } from "sonner"
 
 // This is sample data.
 const data = {
@@ -141,6 +141,15 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [syncing, setSyncing] = React.useState(false)
+
+  const handleSync = async () => {
+    setSyncing(true)
+    await mutate(() => true) // revalidate all SWR keys
+    setSyncing(false)
+    toast.success("Data refreshed")
+  }
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -154,7 +163,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <div className="flex items-center justify-between ">
           <ThemeToggle />
-           <UploadButton />
+          <Button variant="ghost" size="icon" onClick={handleSync} title="Refresh data">
+            <RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
+          </Button>
+          <UploadButton />
         </div>
         {/* <NavUser user={data.user} /> */}
       </SidebarFooter>

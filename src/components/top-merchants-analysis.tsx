@@ -8,7 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Badge } from "./ui/badge";
 import { Loader2, Store, MapPin, Calendar, TrendingUp } from "lucide-react";
 import { Progress } from "./ui/progress";
-import { LoadingState, EmptyState } from "./loading-states";
+import { EmptyState } from "./loading-states";
+import countries from "i18n-iso-countries";
+import enLocale from "i18n-iso-countries/langs/en.json";
+
+countries.registerLocale(enLocale);
 
 interface MerchantSummary {
   name: string;
@@ -28,12 +32,16 @@ interface TopMerchantsAnalysisProps {
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
+const getCountryName = (code: string) =>
+  countries.getName(code, 'en') ?? code;
+
 export function TopMerchantsAnalysis({ query }: TopMerchantsAnalysisProps) {
   const [sortBy, setSortBy] = useState<'amount' | 'count' | 'average'>('amount');
   const [limit, setLimit] = useState('10');
+  const [typeFilter, setTypeFilter] = useState<'all' | 'merchant' | 'sender'>('all');
 
   const { data, error, isLoading } = useSWR<MerchantSummary[]>(
-      `/api/analysis/merchants?${query}&sortBy=${sortBy}&limit=${limit}`,
+      `/api/analysis/merchants?${query}&sortBy=${sortBy}&limit=${limit}&type=${typeFilter}`,
       fetcher
     ) as { data: MerchantSummary[] | undefined; error: unknown; isLoading: boolean };
 
@@ -51,8 +59,11 @@ export function TopMerchantsAnalysis({ query }: TopMerchantsAnalysisProps) {
     );
   }
 
-  const maxAmount = data ? Math.max(...data.map(m => m.totalAmount)) : 0;
-  console.log('maxAmount: ', maxAmount);
+  // const maxAmount = data ? Math.max(...data.map(m => m.totalAmount)) : 0;
+  // console.log('maxAmount: ', maxAmount);
+
+  const filteredData = data ?? [];
+  const maxAmount = filteredData.length > 0 ? Math.max(...filteredData.map(m => m.totalAmount)) : 0;
 
   return (
     <Card>
@@ -77,8 +88,18 @@ export function TopMerchantsAnalysis({ query }: TopMerchantsAnalysisProps) {
               <SelectItem value="average">By Average</SelectItem>
             </SelectContent>
           </Select>
+          <Select value={typeFilter} onValueChange={(value: 'all' | 'merchant' | 'sender') => setTypeFilter(value)} disabled={isLoading}>
+            <SelectTrigger className="w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="merchant">Expenses</SelectItem>
+              <SelectItem value="sender">Income</SelectItem>
+            </SelectContent>
+          </Select>
           <Select value={limit} onValueChange={setLimit} disabled={isLoading}>
-            <SelectTrigger className="w-20">
+            <SelectTrigger className="w-auto">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -121,13 +142,13 @@ export function TopMerchantsAnalysis({ query }: TopMerchantsAnalysisProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.map((merchant, index) => (
+                {filteredData.map((merchant, index) => (
                   <TableRow key={`${merchant.name}-${merchant.city}`}>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <div className="flex items-center justify-center w-8 h-8 bg-primary/10 rounded-full">
+                        <div className={`flex items-center justify-center w-8 h-8 rounded-full ${merchant.type === 'merchant' ? 'bg-red-500/10' : 'bg-green-500/10'}`}>
                           {merchant.type === 'merchant' ? (
-                            <Store className="h-4 w-4 text-primary" />
+                            <Store className="h-4 w-4 text-red-500" />
                           ) : (
                             <TrendingUp className="h-4 w-4 text-green-600" />
                           )}
@@ -135,7 +156,7 @@ export function TopMerchantsAnalysis({ query }: TopMerchantsAnalysisProps) {
                         <div>
                           <div className="font-medium">{merchant.name}</div>
                           <div className="text-xs text-muted-foreground">
-                            #{index + 1} {merchant.type}
+                            #{index + 1} {merchant.type === 'merchant' ? 'expense' : 'income'}
                           </div>
                         </div>
                       </div>
@@ -146,15 +167,15 @@ export function TopMerchantsAnalysis({ query }: TopMerchantsAnalysisProps) {
                         <span className="text-sm">{merchant.city}</span>
                         {merchant.country && (
                           <Badge variant="outline" className="text-xs">
-                            {merchant.country}
+                            {getCountryName(merchant.country)}
                           </Badge>
                         )}
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="space-y-1">
-                        <div className="font-medium">
-                          {merchant.totalAmount.toLocaleString("da-DK", { 
+                        <div className={`font-medium ${merchant.type === 'merchant' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                          {merchant.type === 'merchant' ? '-' : '+'}{merchant.totalAmount.toLocaleString("da-DK", { 
                             style: "currency", 
                             currency: "DKK" 
                           })}
@@ -178,7 +199,7 @@ export function TopMerchantsAnalysis({ query }: TopMerchantsAnalysisProps) {
                       })}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Badge variant="secondary">
+                      <Badge variant={merchant.type === 'merchant' ? 'destructive' : 'secondary'} className={merchant.type === 'sender' ? 'text-green-600 border-green-400' : ''}>
                         {merchant.percentage.toFixed(1)}%
                       </Badge>
                     </TableCell>

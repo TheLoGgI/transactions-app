@@ -32,13 +32,14 @@ export async function GET(request: NextRequest) {
         amount: {
           lt: 0 // Only expenses (negative amounts)
         },
-        categoryId: {
-          not: null
-        }
+        OR: [
+          { categoryId: { not: null } },
+          { subcategoryId: { not: null } }
+        ]
       },
       include: {
         category: true,
-        subcategory: true
+        subcategory: { include: { category: true } }
       },
       orderBy: {
         createdAt: 'asc'
@@ -80,8 +81,9 @@ export async function GET(request: NextRequest) {
 
     // Process transactions
     transactions.forEach(transaction => {
-      if (transaction.category) {
-        const categoryName = transaction.category.name
+      const resolvedCategory = transaction.category ?? transaction.subcategory?.category ?? null
+      if (resolvedCategory) {
+        const categoryName = resolvedCategory.name
         const monthIndex = new Date(transaction.createdAt).getMonth()
         const month = months[monthIndex]
         const amount = Math.abs(transaction.amount) // Convert to positive for display
@@ -102,40 +104,36 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Organize categories into sections based on typical spending patterns
-    const fixedExpenseCategories = ['Housing', 'Insurance', 'Phone', 'Transportation', 'Utilities', 'Internet']
-    const subscriptionCategories = ['Apple Music', 'Disney+', 'Google Storage', 'Netflix', 'Spotify', 'Subscriptions']
-    const variableExpenseCategories = ['Groceries', 'Dining Out', 'Entertainment', 'Shopping', 'Health', 'Education']
+    // Build section maps from DB expenseType tags
+    // Use raw SQL to bypass stale Prisma client types until `prisma generate` is re-run
+    const categoryTypes = await prisma.$queryRaw<{ name: string; expenseType: string | null }[]>`
+      SELECT name, expenseType FROM categories
+    `
+
+    const fixedNames = categoryTypes.filter(c => c.expenseType === 'FIXED').map(c => c.name)
+    const subscriptionNames = categoryTypes.filter(c => c.expenseType === 'SUBSCRIPTION').map(c => c.name)
+    const variableNames = categoryTypes.filter(c => c.expenseType === 'VARIABLE').map(c => c.name)
+    const taggedNames = new Set([...fixedNames, ...subscriptionNames, ...variableNames])
 
     const createSection = (title: string, categoryNames: string[]): SpendingSection => {
       const sectionCategories = categoryNames
         .map(name => categoryData[name])
         .filter((cat): cat is CategoryOverview => Boolean(cat))
         .sort((a, b) => b.total - a.total)
-      
-      // Add any remaining categories that don't fit the predefined ones
-      if (title === 'Variable Expenses') {
-        const remainingCategories = Object.values(categoryData).filter(cat => 
-          !fixedExpenseCategories.includes(cat.name) && 
-          !subscriptionCategories.includes(cat.name) &&
-          !variableExpenseCategories.includes(cat.name)
-        )
-        sectionCategories.push(...remainingCategories)
-      }
-      
+
       const sectionTotal = sectionCategories.reduce((sum, cat) => sum + cat.total, 0)
-      
-      return {
-        title,
-        categories: sectionCategories,
-        sectionTotal
-      }
+
+      return { title, categories: sectionCategories, sectionTotal }
     }
 
+    // Untagged categories go into "Other Expenses"
+    const untaggedNames = Object.keys(categoryData).filter(name => !taggedNames.has(name))
+
     const spendingSections: SpendingSection[] = [
-      createSection('Fixed Expenses', fixedExpenseCategories),
-      createSection('Subscriptions', subscriptionCategories),
-      createSection('Variable Expenses', variableExpenseCategories)
+      createSection('Fixed Expenses', fixedNames),
+      createSection('Subscriptions', subscriptionNames),
+      createSection('Variable Expenses', variableNames),
+      createSection('Other Expenses', untaggedNames),
     ].filter(section => section.categories.length > 0)
 
     // Calculate totals

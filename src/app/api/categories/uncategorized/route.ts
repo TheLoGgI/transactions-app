@@ -34,6 +34,8 @@ export async function GET() {
     }),
   ])
 
+    console.log('uncategorized: ', uncategorized);
+
   // Map the results to alias Sender to sender
   const mappedResults = uncategorized.map((transaction) => ({
     ...transaction,

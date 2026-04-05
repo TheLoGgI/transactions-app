@@ -2,7 +2,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 export async function GET() {
-  // For example, fetch data from your DB here
     const categories = await prisma.categories.findMany({
       select: {
         id: true,
@@ -37,9 +36,12 @@ export async function GET() {
 
 export async function POST(request: Request) {
   // Parse the request body
-  const body = await request.json() as  { categoryName: string; categoryColor: string, categoryId?: string };
-  const { categoryName, categoryColor, categoryId } = body;
+  const body = await request.json() as  { categoryName: string; categoryColor: string; categoryId?: string; expenseType?: string | null };
+  const { categoryName, categoryColor, categoryId, expenseType } = body;
 
+  const expenseTypeValue = (expenseType === 'FIXED' || expenseType === 'VARIABLE' || expenseType === 'SUBSCRIPTION')
+    ? expenseType
+    : null;
 
   if (categoryId) {
     const checkId = await prisma.categories.findFirstOrThrow({
@@ -55,6 +57,7 @@ export async function POST(request: Request) {
       data: {
         color: categoryColor,
         name: categoryName,
+        expenseType: expenseTypeValue,
       }
     })
 
@@ -69,10 +72,11 @@ export async function POST(request: Request) {
   // e.g. Insert new category into your DB
   const newCategory = await prisma.categories.upsert({
     where: { name: categoryName },
-    update: { color: categoryColor },
+    update: { color: categoryColor, expenseType: expenseTypeValue },
     create: {
       color: categoryColor,
-      name: categoryName
+      name: categoryName,
+      expenseType: expenseTypeValue,
     }
   });
 

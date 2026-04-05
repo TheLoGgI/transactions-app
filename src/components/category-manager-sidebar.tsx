@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Edit2, Plus, Trash2 } from "lucide-react"
 import { useState, type ComponentProps } from "react"
 import { toast } from "sonner"
@@ -13,6 +14,7 @@ interface Category {
     id: number
     name: string
     color: string
+    expenseType: 'FIXED' | 'VARIABLE' | 'SUBSCRIPTION' | null
 }
 
 interface CategoryManagerProps extends ComponentProps<typeof Sidebar> {
@@ -46,13 +48,14 @@ const predefinedColors = [
     "#D5A6BD",
 ]
 
-const handleCategories = async (url: string, { arg }: { arg: { id?: string; name: string; color: string } }) => {
+const handleCategories = async (url: string, { arg }: { arg: { id?: string; name: string; color: string; expenseType?: string | null } }) => {
     const res = await fetch(url, {
         method: "POST",
         body: JSON.stringify({
             categoryName: arg.name,
             categoryColor: arg.color,
             categoryId: arg.id,
+            expenseType: arg.expenseType ?? null,
         }),
     })
     if (!res.ok) {
@@ -86,9 +89,8 @@ export function SidebarCategoryManager({ categoriesData, ...props }: CategoryMan
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [editingCategory, setEditingCategory] = useState<Category | null>(null)
     const [categories, setCategories] = useState(categoriesData)
-    // const [newCategoryName, setNewCategoryName] = useState("")
     const [newCategoryColor, setNewCategoryColor] = useState(predefinedColors[0])
-    // const [newCategoryType, setNewCategoryType] = useState<"income" | "expense">("expense")
+    const [newExpenseType, setNewExpenseType] = useState<string>("")
     //   const { toast } = useToast()
     const { trigger } = useSWRMutation('/api/categories', handleCategories)
     const { trigger: deleteCategory } = useSWRMutation('/api/categories', deleteCategoryMutation)
@@ -97,6 +99,7 @@ export function SidebarCategoryManager({ categoriesData, ...props }: CategoryMan
         const name = formData.get('category-name') as string | null
         const newColor = formData.get('category-color') as string
         const id = formData.get('category-id') as string
+        const expenseType = formData.get('expense-type') as string | null
 
         if (typeof name !== "string" || !name.trim()) {
             toast.warning("Invalid category name", {
@@ -105,10 +108,11 @@ export function SidebarCategoryManager({ categoriesData, ...props }: CategoryMan
             return
         }
 
-        const newCategory: { name: string; color: string; id?: string } = {
+        const newCategory: { name: string; color: string; id?: string; expenseType?: string | null } = {
             ...(id && id.trim() !== "" ? { id: id } : {}),
             name: name.trim(),
             color: newColor,
+            expenseType: expenseType ?? null,
         }
         // console.log('newCategory: ', newCategory);
 
@@ -126,9 +130,8 @@ export function SidebarCategoryManager({ categoriesData, ...props }: CategoryMan
 
     const handleEditCategory = (category: Category) => {
         setEditingCategory(category)
-        // setNewCategoryName(category.name)
         setNewCategoryColor(category.color)
-        // setNewCategoryType(category.type ?? "expense")
+        setNewExpenseType(category.expenseType ?? "")
         setIsDialogOpen(true)
     }
 
@@ -147,9 +150,8 @@ export function SidebarCategoryManager({ categoriesData, ...props }: CategoryMan
 
     const resetForm = () => {
         setEditingCategory(null)
-        // setNewCategoryName("")
         setNewCategoryColor(predefinedColors[0])
-        // setNewCategoryType("expense")
+        setNewExpenseType("")
     }
 
     const handleDialogClose = () => {
@@ -172,7 +174,14 @@ export function SidebarCategoryManager({ categoriesData, ...props }: CategoryMan
                         >
                             <div className="flex items-center gap-3">
                                 <div className="w-4 h-4 rounded-full" style={{ backgroundColor: category.color }} />
-                                <span className="font-medium">{category.name}</span>
+                                <div>
+                                    <span className="font-medium">{category.name}</span>
+                                    {category.expenseType && (
+                                        <span className="ml-2 text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                                            {category.expenseType === 'FIXED' ? 'Fixed' : category.expenseType === 'VARIABLE' ? 'Variable' : 'Subscription'}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                             <div className="flex items-center gap-2">
                                 <Button variant="ghost" size="sm" onClick={() => handleEditCategory(category)}>
@@ -253,6 +262,20 @@ export function SidebarCategoryManager({ categoriesData, ...props }: CategoryMan
                                             <div className="w-6 h-6 rounded-full border" style={{ backgroundColor: newCategoryColor }} />
                                             <span className="text-sm text-muted-foreground">Selected color</span>
                                         </div>
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="expense-type">Expense Type</Label>
+                                        <Select value={newExpenseType} onValueChange={setNewExpenseType}>
+                                            <SelectTrigger id="expense-type">
+                                                <SelectValue placeholder="Select type (optional)" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="FIXED">Fixed Expense</SelectItem>
+                                                <SelectItem value="VARIABLE">Variable Expense</SelectItem>
+                                                <SelectItem value="SUBSCRIPTION">Subscription</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <input type="hidden" name="expense-type" value={newExpenseType} />
                                     </div>
                                 </div>
                                 <DialogFooter>

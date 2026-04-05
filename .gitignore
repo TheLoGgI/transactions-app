@@ -18,6 +18,9 @@ db.sqlite
 /out/
 next-env.d.ts
 
+# public transactions Data
+/public/transactions
+
 # production
 /build
 
