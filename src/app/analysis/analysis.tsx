@@ -3,8 +3,6 @@
 import { Suspense } from "react"
 
 import { DateRangeSelector } from "@/components/date-range-selector"
-import { CategoryExpensesOverview } from "@/components/category-expenses-overview"
-import { TopMerchantsAnalysis } from "@/components/top-merchants-analysis"
 import { SpendingPatternsAnalysis } from "@/components/spending-patterns-analysis"
 import { LoadingState } from "@/components/loading-states"
 import { useDateRange } from "@/hooks/useDateRange"
@@ -47,9 +45,9 @@ export function AnalysisOverview() {
       <div className="flex flex-col gap-6">
         <header className="flex sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Transactions Dashboard</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Spending</h1>
             <p className="text-muted-foreground">
-              View and categorize your transactions to better understand your spending habits.
+              Analyze spending patterns
             </p>
 
           </div>
@@ -66,26 +64,6 @@ export function AnalysisOverview() {
           </div>
 
         </header>
-
-        <Suspense fallback={
-          <LoadingState 
-            title="Loading category expenses..." 
-            description="Analyzing your spending by category"
-            showSkeleton={true}
-          />
-        }>
-          <CategoryExpensesOverview query={urlQuery} />
-        </Suspense>
-
-        <Suspense fallback={
-          <LoadingState 
-            title="Loading merchants analysis..." 
-            description="Identifying your top spending destinations"
-            showSkeleton={true}
-          />
-        }>
-          <TopMerchantsAnalysis query={urlQuery} />
-        </Suspense>
 
         <Suspense fallback={
           <LoadingState 

@@ -2,10 +2,12 @@
 
 import { toast } from "sonner"
 import { Button } from "./ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import type { TransactionJSON } from "@/app/api/transactions/route"
 import useSWRMutation from "swr/mutation"
 import type { TransactionRange } from "@/app/api/transactions/general/route"
-import { useRef } from "react"
+import { ChevronDown, Upload } from "lucide-react"
+import { useRef, useState } from "react"
 
 interface UploadButtonProps {
   dataRange?: TransactionRange
@@ -18,11 +20,12 @@ interface ResponseBodyPost {
   skippedTransactions: number,
 }
 
-const uploadTransactions = async (url: string, { arg }: { arg: File }) => {
+const uploadTransactions = async (url: string, { arg }: { arg: { file: File; override: boolean } }) => {
   const formData = new FormData()
-  formData.append("transactions", arg)
+  formData.append("transactions", arg.file)
 
-  const res = await fetch(url, {
+  const endpoint = arg.override ? `${url}?override=true` : url
+  const res = await fetch(endpoint, {
     method: "POST",
     body: formData,
   })
@@ -36,6 +39,7 @@ const uploadTransactions = async (url: string, { arg }: { arg: File }) => {
 
 export const UploadButton = ({ dataRange }: UploadButtonProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [override, setOverride] = useState(false)
   const { trigger, isMutating } = useSWRMutation('/api/transactions', uploadTransactions)
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
@@ -62,14 +66,14 @@ export const UploadButton = ({ dataRange }: UploadButtonProps) => {
 
         const dbFirstDate = new Date(dataRange?.firstInRange ?? "")
         const dbLastDate = new Date(dataRange?.lastInRange ?? "")
-        if (dbFirstDate < firstEntryDate || dbLastDate > lastEntryDate) {
+        if (!override && (dbFirstDate < firstEntryDate || dbLastDate > lastEntryDate)) {
           toast("Date range mismatch", {
             description: `File "${file.name}": The uploaded transactions are from ${firstEntryDate.toLocaleDateString("da-DK", { dateStyle: "long" })} to ${lastEntryDate.toLocaleDateString("da-DK", { dateStyle: "long" })}, but your dashboard data is from ${dbFirstDate.toLocaleDateString("da-DK", { dateStyle: "long" })} to ${dbLastDate.toLocaleDateString("da-DK", { dateStyle: "long" })}. Skipping this file.`,
           })
           continue
         }
 
-        const res = await trigger(file)
+        const res = await trigger({ file, override })
         if (res.ok) {
           const body = await res.json() as ResponseBodyPost
           toast.success(`${file.name}: ${body.message}`, {
@@ -92,34 +96,44 @@ export const UploadButton = ({ dataRange }: UploadButtonProps) => {
   }
 
   // Trigger file input
-  const triggerFileUpload = () => {
-    fileInputRef.current?.click()
+  const triggerFileUpload = (withOverride: boolean) => {
+    setOverride(withOverride)
+    // Defer click so state is set before the upload handler runs
+    setTimeout(() => fileInputRef.current?.click(), 0)
   }
 
-
   return (
-    <div className="flex items-center gap-2">
-      {/* File Upload Button */}
+    <div className="flex items-center">
       <Button
         variant="outline"
-        onClick={triggerFileUpload}
+        onClick={() => triggerFileUpload(false)}
         disabled={isMutating}
-        className="flex items-center gap-2"
+        className="flex items-center gap-2 rounded-r-none border-r-0"
       >
-        {isMutating ? (
-          <>
-            {/* You may need to import Loader2 from lucide-react or your icon library */}
-            {/* <Loader2 className="h-4 w-4 animate-spin" /> */}
-            Uploading...
-          </>
-        ) : (
-          <>
-            {/* You may need to import Upload from lucide-react or your icon library */}
-            {/* <Upload className="h-4 w-4" /> */}
-            Upload JSON
-          </>
-        )}
+        <Upload className="h-4 w-4" />
+        {isMutating ? "Uploading..." : "Upload JSON"}
       </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            disabled={isMutating}
+            className="rounded-l-none px-2"
+          >
+            <ChevronDown className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => triggerFileUpload(false)}>
+            <Upload className="h-4 w-4 mr-2" />
+            Upload JSON
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => triggerFileUpload(true)}>
+            <Upload className="h-4 w-4 mr-2" />
+            Upload &amp; Override existing
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       {/* Hidden file input */}
       <input
         ref={fileInputRef}

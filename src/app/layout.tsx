@@ -6,6 +6,9 @@ import "@/styles/globals.css";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import { SWRConfig } from "swr";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export const metadata: Metadata = {
   title: "Transactions Dashbaord",
@@ -18,9 +21,15 @@ const geist = Geist({
   variable: "--font-geist-sans",
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const uncategorizedCount = await prisma.transaction.count({
+    where: {
+      amount: { lt: 0 },
+      AND: [{ subcategory: { category: null } }, { category: null }],
+    },
+  });
   return (
     <html lang="en" className={geist.variable} suppressHydrationWarning>
       <body>
@@ -34,7 +43,7 @@ export default function RootLayout({
             }}
           >
             <SidebarProvider>
-              <AppSidebar />
+              <AppSidebar uncategorizedCount={uncategorizedCount} />
               {children}
             </SidebarProvider>
           </SWRConfig>

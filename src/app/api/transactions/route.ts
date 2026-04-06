@@ -202,6 +202,9 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const url = new URL(request.url)
+  const override = url.searchParams.get('override') === 'true'
+
   const formdata = await request.formData()
   const uploadedFile = formdata.get('transactions')
   if (!uploadedFile) {
@@ -242,8 +245,8 @@ export async function POST(request: Request) {
           },
         })
 
-        // Skip if transaction already exists
-        if (existingTransaction?.id) {
+        // Skip if transaction already exists (unless override mode is active)
+        if (existingTransaction?.id && !override) {
           continue
         }
 
@@ -334,12 +337,13 @@ export async function POST(request: Request) {
 
       let insertedCount = 0
       for (const transaction of transactionData) {
+        const { transactionKey, ...updateData } = transaction
         const res = await prisma.transaction.upsert({
           create: transaction,
           where: {
-            transactionKey: transaction.transactionKey,
+            transactionKey,
           },
-          update: {},
+          update: override ? updateData : {},
         })
 
         if (res) {

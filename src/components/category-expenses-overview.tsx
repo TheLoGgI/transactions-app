@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useSWR from "swr";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Badge } from "./ui/badge";
-import { Loader2, TrendingDown, Receipt, Calendar, RotateCcw } from "lucide-react";
+import { Loader2, TrendingDown, Receipt, Banknote, RotateCcw } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 interface Category {
@@ -75,6 +75,13 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
     fetcher
   );
 
+  // Default to the first category once loaded
+  useEffect(() => {
+    if (categories && categories.length > 0 && !selectedCategoryId) {
+      setSelectedCategoryId(categories[0]!.id.toString()) // Ignore type !
+    }
+  }, [categories, selectedCategoryId])
+
   // Fetch category expenses data
   const { data: expensesData, isLoading: expensesLoading, isValidating } = useSWR<CategoryExpensesData>(
     selectedCategoryId ? `/api/transactions/category/${selectedCategoryId}${query}` : null,
@@ -82,7 +89,8 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
   );
 
   const formatCurrency = (amount: number) => {
-    return Math.abs(amount).toLocaleString("da-DK", { 
+    const safe = Number(amount)
+    return Math.abs(safe || 0).toLocaleString("da-DK", { 
       style: "currency", 
       currency: "DKK" 
     });
@@ -102,110 +110,114 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
 
   return (
     <div className="space-y-6">
-      {/* Category Selection */}
+      {/* Category selector */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingDown className="h-5 w-5" />
-            Category Expense Investigation
+            Kategori udgifter
           </CardTitle>
           <CardDescription>
-            Select a category to view detailed expense breakdown and transaction history
+            Vælg en kategori for at se en detaljeret udgiftsoversigt og transaktionshistorik.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="w-full max-w-sm">
-              <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a category to investigate" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories?.map((category) => (
-                    <SelectItem key={category.id} value={category.id.toString()}>
-                      <div className="flex items-center gap-2">
-                        <div 
-                          className="h-3 w-3 rounded-full" 
-                          style={{ backgroundColor: category.color }}
-                        />
-                        {category.name}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {selectedCategory && expensesData && (
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border">
-                  <TrendingDown className="h-8 w-8 text-red-500" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Expenses</p>
-                    <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-                      -{formatCurrency(expensesData.totalExpenses)}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border">
-                  <RotateCcw className="h-8 w-8 text-green-500" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Returns</p>
-                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                      +{formatCurrency(expensesData.totalReturns)}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border">
-                  <Receipt className="h-8 w-8 text-blue-500" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Transactions</p>
-                    <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                      {expensesData.transactionCount}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border">
-                  <Calendar className="h-8 w-8 text-orange-500" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Net Spent</p>
-                    <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                      {formatCurrency(expensesData.totalExpenses - expensesData.totalReturns)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
+          <div className="w-full max-w-sm">
+            <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Vælg en kategori" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories?.map((category) => (
+                  <SelectItem key={category.id} value={category.id.toString()}>
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="h-3 w-3 rounded-full"
+                        style={{ backgroundColor: category.color }}
+                      />
+                      {category.name}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
 
       {selectedCategoryId && (
         <>
-          {/* Merchant/Sender Summary */}
+          {/* Summary stats */}
+          {isDataLoading ? (
+            <div className="flex items-center justify-center h-32 space-x-2">
+              <Loader2 className="h-6 w-6 animate-spin" />
+              <span className="text-muted-foreground">Indlæser data...</span>
+            </div>
+          ) : expensesData && (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border">
+                <TrendingDown className="h-8 w-8 text-red-500 shrink-0" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Samlede udgifter</p>
+                  <p className="text-2xl font-bold text-red-600 dark:text-red-400">
+                    -{formatCurrency(expensesData.totalExpenses)}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border">
+                <RotateCcw className="h-8 w-8 text-green-500 shrink-0" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Samlede returneringer</p>
+                  <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                    +{formatCurrency(expensesData.totalReturns)}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border">
+                <Receipt className="h-8 w-8 text-blue-500 shrink-0" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Transaktioner</p>
+                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                    {expensesData.transactionCount}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border">
+                <Banknote className="h-8 w-8 text-orange-500 shrink-0" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Nettoudgift</p>
+                  <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                    {formatCurrency(expensesData.totalExpenses - expensesData.totalReturns)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Merchant / sender breakdown */}
           <Card>
             <CardHeader>
-              <CardTitle>Top Merchants & Senders</CardTitle>
+              <CardTitle>Top handlende og afsendere</CardTitle>
               <CardDescription>
-                Breakdown of expenses by merchant and sender for {selectedCategory?.name}
+                Udgiftsopdeling pr. handlende og afsender for {selectedCategory?.name}
               </CardDescription>
             </CardHeader>
             <CardContent>
               {isDataLoading ? (
                 <div className="flex items-center justify-center h-32 space-x-2">
                   <Loader2 className="h-6 w-6 animate-spin" />
-                  <span className="text-muted-foreground">Loading merchant data...</span>
+                  <span className="text-muted-foreground">Indlæser...</span>
                 </div>
-              ) : expensesData?.merchantSummary ? (
+              ) : expensesData?.merchantSummary?.length ? (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Name</TableHead>
+                      <TableHead>Navn</TableHead>
                       <TableHead>Type</TableHead>
-                      <TableHead className="text-right">Transactions</TableHead>
-                      <TableHead className="text-right">Returns</TableHead>
-                      <TableHead className="text-right">Total Spent</TableHead>
-                      <TableHead className="text-right">Average</TableHead>
+                      <TableHead className="text-right">Transaktioner</TableHead>
+                      <TableHead className="text-right">Returneringer</TableHead>
+                      <TableHead className="text-right">Samlet forbrug</TableHead>
+                      <TableHead className="text-right">Gennemsnit</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -214,11 +226,11 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
                         <TableCell className="font-medium">{merchant.name}</TableCell>
                         <TableCell>
                           <Badge variant={merchant.type === 'merchant' ? 'default' : 'secondary'}>
-                            {merchant.type}
+                            {merchant.type === 'merchant' ? 'Handlende' : 'Afsender'}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
-                          <span>{merchant.transactionCount - merchant.returnCount}</span>
+                          {merchant.transactionCount - merchant.returnCount}
                         </TableCell>
                         <TableCell className="text-right">
                           {merchant.returnCount > 0 ? (
@@ -231,7 +243,7 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
                                   </Badge>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                  {merchant.returnCount} return{merchant.returnCount > 1 ? 's' : ''} totalling +{formatCurrency(merchant.returnTotal)}
+                                  {merchant.returnCount} returnering{merchant.returnCount > 1 ? 'er' : ''} på i alt +{formatCurrency(merchant.returnTotal)}
                                 </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
@@ -250,33 +262,33 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
                   </TableBody>
                 </Table>
               ) : (
-                <p className="text-center text-muted-foreground py-8">No data available</p>
+                <p className="text-center text-muted-foreground py-8">Ingen data tilgængeligt</p>
               )}
             </CardContent>
           </Card>
 
-          {/* Recent Transactions */}
+          {/* Transaction list */}
           <Card>
             <CardHeader>
-              <CardTitle>Recent Transactions</CardTitle>
+              <CardTitle>Seneste transaktioner</CardTitle>
               <CardDescription>
-                Latest transactions for {selectedCategory?.name}
+                Nyeste transaktioner for {selectedCategory?.name}
               </CardDescription>
             </CardHeader>
             <CardContent>
               {isDataLoading ? (
                 <div className="flex items-center justify-center h-32 space-x-2">
                   <Loader2 className="h-6 w-6 animate-spin" />
-                  <span className="text-muted-foreground">Loading transactions...</span>
+                  <span className="text-muted-foreground">Indlæser...</span>
                 </div>
-              ) : expensesData?.transactions ? (
+              ) : expensesData?.transactions?.length ? (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Description</TableHead>
-                      <TableHead>Subcategory</TableHead>
-                      <TableHead className="text-right">Amount</TableHead>
+                      <TableHead>Dato</TableHead>
+                      <TableHead>Beskrivelse</TableHead>
+                      <TableHead>Underkategori</TableHead>
+                      <TableHead className="text-right">Beløb</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -284,22 +296,20 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
                       const isReturn = transaction.amount > 0;
                       return (
                         <TableRow key={transaction.id}>
-                          <TableCell>{formatDate(transaction.createdAt)}</TableCell>
+                          <TableCell className="text-muted-foreground">{formatDate(transaction.createdAt)}</TableCell>
                           <TableCell className="font-medium">
-                            {transaction.merchant?.name ?? transaction.Sender?.name ?? 'Unknown'}
+                            {transaction.merchant?.name ?? transaction.Sender?.name ?? 'Ukendt'}
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
                               {transaction.subcategory?.name ? (
-                                <Badge variant="outline">
-                                  {transaction.subcategory.name}
-                                </Badge>
+                                <Badge variant="outline">{transaction.subcategory.name}</Badge>
                               ) : (
-                                <span className="text-muted-foreground">No subcategory</span>
+                                <span className="text-muted-foreground text-sm">Ingen underkategori</span>
                               )}
                               {isReturn && (
                                 <Badge variant="outline" className="text-green-600 border-green-400">
-                                  Return
+                                  Returnering
                                 </Badge>
                               )}
                             </div>
@@ -313,7 +323,7 @@ export function CategoryExpensesOverview({ query }: CategoryExpensesOverviewProp
                   </TableBody>
                 </Table>
               ) : (
-                <p className="text-center text-muted-foreground py-8">No transactions found</p>
+                <p className="text-center text-muted-foreground py-8">Ingen transaktioner fundet</p>
               )}
             </CardContent>
           </Card>

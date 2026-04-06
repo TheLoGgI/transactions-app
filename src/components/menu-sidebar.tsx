@@ -3,39 +3,43 @@
 import * as React from "react"
 import {
   AudioWaveform,
-  BookOpen,
-  Bot,
   Command,
   Frame,
   GalleryVerticalEnd,
   Map,
   PieChart,
-  Settings2,
-  PiggyBank,
-  SquareTerminal,
   Target,
   TrendingUp,
   Calculator,
   AlertTriangle,
   Zap,
   Heart,
-  RefreshCw,
+  Tag,
+  Store,
+  Layers,
+  LayoutDashboard,
+  Wallet,
+  TrendingDown,
+  CalendarDays,
+  ChartColumnDecreasing,
 } from "lucide-react"
 
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuLink,
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { NavMain } from "./menu-sidebar-content"
 import { SavingsNavigation } from "./savings-navigation"
 import { ThemeToggle } from "./theme-toggle"
 import { UploadButton } from "./uploadButton"
-import { Button } from "./ui/button"
-import { mutate } from "swr"
-import { toast } from "sonner"
 
 // This is sample data.
 const data = {
@@ -63,30 +67,49 @@ const data = {
   ],
   navMain: [
     {
-      title: "Oversigt",
+      title: "Dashboard",
       url: "/",
-      icon: SquareTerminal,
+      icon: LayoutDashboard,
       isActive: true,
+    },
+    {
+      title: "Annually Overview",
+      url: "/annually-report",
+      icon: CalendarDays,
     },
     {
       title: "Budget",
       url: "/budget",
-      icon: Bot,
+      icon: Wallet,
     },
     {
-      title: "Års oversigt",
-      url: "/annually-report",
-      icon: BookOpen,
-    },
-    {
-      title: "Analyse",
+      title: "Spending",
       url: "/analysis",
-      icon: Settings2,
+      icon: TrendingDown,
+    },
+    // {
+    //   title: "Invistering",
+    //   url: "#",
+    //   icon: PiggyBank,
+    // },
+  ],
+  manageItems: [
+    {
+      title: "Handlende",
+      url: "/merchants",
+      icon: Store,
     },
     {
-      title: "Invistering",
-      url: "#",
-      icon: PiggyBank,
+      title: "Underkategorier",
+      url: "/subcategories",
+      icon: Layers,
+    },
+  ],
+  insightItems: [
+    {
+      title: "Category Expenses",
+      url: "/category-expenses",
+      icon: ChartColumnDecreasing,
     },
   ],
   savingsAnalytics: [
@@ -140,15 +163,15 @@ const data = {
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [syncing, setSyncing] = React.useState(false)
+export function AppSidebar({ uncategorizedCount, ...props }: React.ComponentProps<typeof Sidebar> & { uncategorizedCount: number }) {
 
-  const handleSync = async () => {
-    setSyncing(true)
-    await mutate(() => true) // revalidate all SWR keys
-    setSyncing(false)
-    toast.success("Data refreshed")
-  }
+  const navItems = [
+    ...(uncategorizedCount > 0
+      ? [{ title: "Ukategoriserede", url: "/uncategorized", icon: Tag, highlight: true, count: uncategorizedCount }]
+      : []),
+    ...data.navMain,
+  ]
+
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -156,16 +179,39 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/* <TeamSwitcher teams={data.teams} /> */}
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navItems} />
+        <SidebarGroup>
+          <SidebarGroupLabel>Indsigt</SidebarGroupLabel>
+          <SidebarMenu>
+            {data.insightItems.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuLink href={item.url}>
+                  {item.icon && <item.icon />}
+                  <span>{item.title}</span>
+                </SidebarMenuLink>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Administrer</SidebarGroupLabel>
+          <SidebarMenu>
+            {data.manageItems.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuLink href={item.url}>
+                  {item.icon && <item.icon />}
+                  <span>{item.title}</span>
+                </SidebarMenuLink>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
         <SavingsNavigation items={data.savingsAnalytics} />
         {/* <NavProjects projects={data.projects} /> */}
       </SidebarContent>
       <SidebarFooter>
         <div className="flex items-center justify-between ">
           <ThemeToggle />
-          <Button variant="ghost" size="icon" onClick={handleSync} title="Refresh data">
-            <RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
-          </Button>
           <UploadButton />
         </div>
         {/* <NavUser user={data.user} /> */}

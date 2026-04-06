@@ -61,6 +61,7 @@ export const createUnknownTransactions = async (
     case 'stof': // Standing order from (e.g., "Penge til bil")
     case 'stoi': // Standing orders/internal transfers (e.g., "Nordnet Portefølje", "Køkken penge til Emil")
     case 'btlq': // Bank transfers/automatic payments (e.g., "VILH. KIERS KOLLEGIUM", "HK,HANDELS- OG KONTORF. FORBUND", "CALL ME")
+    case 'cpst': // Card posting statement - VISA/card payments without detailed merchant info (e.g., "Forretning: VISA-NOTA")
       const btlqMerchantName = transaction.transactionText
       const merchantId = generateMerchantId(btlqMerchantName)
       const unknownMerchant = await prisma.merchant.upsert({

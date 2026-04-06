@@ -7,11 +7,10 @@ import { TransactionsSummary } from "./transactionsSumarry"
 import { TransactionsCategory } from "./transactions-category"
 import { DateRangeSelector } from "./date-range-selector"
 import { type TransactionRange } from '@/app/api/transactions/general/route'
-import UncategorizedTransactions from "./uncategoriezed-transactions"
-import { CategoryExpensesOverview } from "./category-expenses-overview"
 import { IncomeExpensesChart } from "./income-expenses-chart"
 import { TrendingCategories } from "./trending-categories"
 import { TimelineVisualization } from "./timeline-visualization"
+import { TopMerchantsAnalysis } from "./top-merchants-analysis"
 import { useDateRange } from "@/hooks/useDateRange"
 
 export interface TransactionsSummaryResponse {
@@ -118,15 +117,16 @@ export function TransactionsDashboard() {
           <TransactionsCategory totalExpenses={totalExpenses} query={urlQuery} />
         </Suspense>
 
-        <UncategorizedTransactions />
-
-
         <Suspense fallback={<div>Loading trending categories...</div>}>
           <TrendingCategories query={urlQuery} />
         </Suspense>
 
         <Suspense fallback={<div>Loading income expenses chart...</div>}>
           <IncomeExpensesChart query={urlQuery} />
+        </Suspense>
+
+        <Suspense fallback={<div>Loading top merchants...</div>}>
+          <TopMerchantsAnalysis query={urlQuery} />
         </Suspense>
       </div>
     </div>

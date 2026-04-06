@@ -25,6 +25,7 @@ export default async function Home() {
       id: true,
       name: true,
       color: true,
+      expenseType: true,
     }
   })
 
